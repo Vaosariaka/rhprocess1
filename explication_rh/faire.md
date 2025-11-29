@@ -39,9 +39,9 @@ B. Gestion des performances
 
 C. Gestion des compétences
 
-- [x] Cartographie des compétences de l'entreprise — API + UI basique ajoutées (`/api/competency/cartography/`, template `competency_cartography.html`).
+- [x] Cartographie des compétences de l'entreprise — API + UI basique ajoutées (`/api/competency/cartography/`, template `competency_cartography.html`). -> a corriger
 - [x] Matching automatique profil / poste à pourvoir — API `/api/competency/match/` + simple matching UI (`match_candidates.html`) implemented (simple TF / competency score).
-- [x] Suggestion de formations — API `/api/competency/suggest-trainings/` + UI (`training_suggestions.html`) and generation command available.
+- [x] Suggestion de formations — API `/api/competency/suggest-trainings/` + UI (`training_suggestions.html`) and generation command available. ->a corriger
 
 D. Self-Service Employé (Espace employé)
 
@@ -52,11 +52,11 @@ D. Self-Service Employé (Espace employé)
 
 E. Portail Manager
 
-- [x] Validation des demandes de son équipe — vue `approve_leave` + `user_is_manager`.
+- [x] Validation des demandes de son équipe — vue `approve_leave` + `user_is_manager`. -> a corriger
 - [x] Suivi des performances et absences — données présentes; UI dédiée limitée.
 - [ ] Tableaux de bord spécifiques par departement — backend data disponible; dashboards front-end
 
-F. Automatisation et Intelligence artificielle
+F. Automatisation et Intelligence artificielle ->a corriger
 
 - [x] Chatbot RH pour répondre aux questions fréquentes (congés, paie, etc.) — `chatbot_view` implémenté.
 - [x] Génération automatique de documents RH (contrat, attestation, etc.) — exports et templates partiels disponibles.
