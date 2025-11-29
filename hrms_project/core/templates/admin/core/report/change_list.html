@@ -1,0 +1,79 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block content %}
+  <div style="margin-bottom:1rem; padding:1rem; border:1px solid #ddd; border-radius:6px; background:#fff">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+      <div>
+        <h2 style="margin:0 0 .25rem 0;">Rapports RH</h2>
+        <p style="margin:0; color:#555;">Total rapports persistés: {{ reports_total|default:0 }}</p>
+        {% if hr_dashboard_url %}
+          <p style="margin-top:.5rem;"><a class="button" href="{{ hr_dashboard_url }}">Voir tableau de bord RH</a></p>
+        {% endif %}
+      </div>
+
+      <div style="display:flex; gap:1rem; align-items:stretch;">
+        <div style="width:220px; padding:.5rem; border-left:1px solid #eee">
+          <canvas id="reports-gender-chart" width="220" height="160"></canvas>
+        </div>
+        <div style="width:320px; padding:.5rem; border-left:1px solid #eee">
+          <canvas id="reports-service-chart" width="320" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+
+    {% if recent_reports %}
+      <div style="margin-top:1rem">
+        <strong>Derniers rapports</strong>
+        <ul style="margin:.25rem 0 0 0; padding-left:1.25rem;">
+          {% for r in recent_reports %}
+            <li style="margin:.25rem 0;">
+              {% if r.name %}
+                {{ r.name }} — {{ r.created_at }} {% if r.created_by %} (par {{ r.created_by }}){% endif %}
+              {% else %}
+                Rapport
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+
+  {{ block.super }}
+
+  {# Include Chart.js from CDN and render small charts based on /admin/hr-stats.json #}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+    (function(){
+      function safeGet(o,k,d){try{return o[k]!==undefined?o[k]:d}catch(e){return d}}
+      fetch('/admin/hr-stats.json').then(function(r){ if(!r.ok) throw new Error('no stats'); return r.json() }).then(function(data){
+        // gender chart
+        var genderCtx = document.getElementById('reports-gender-chart');
+        if(genderCtx && data.gender_counts){
+          var labels = Object.keys(data.gender_counts);
+          var values = labels.map(function(k){return data.gender_counts[k]});
+          new Chart(genderCtx, {
+            type: 'pie',
+            data: { labels: labels, datasets: [{ data: values, backgroundColor: ['#4dc9f6','#f67019','#f53794','#537bc4'] }] },
+            options: { plugins: { legend: { display: true, position: 'bottom' } }, responsive: true }
+          });
+        }
+        // service chart (top services)
+        var svcCtx = document.getElementById('reports-service-chart');
+        if(svcCtx && data.top_services){
+          var svcLabels = data.top_services.slice(0,8).map(function(t){return t[0]});
+          var svcVals = data.top_services.slice(0,8).map(function(t){return t[1]});
+          new Chart(svcCtx, {
+            type: 'bar',
+            data: { labels: svcLabels, datasets: [{ label: 'Effectif', data: svcVals, backgroundColor: '#537bc4' }] },
+            options: { indexAxis: 'y', plugins: { legend: { display: false } }, responsive: true }
+          });
+        }
+      }).catch(function(){
+        // ignore failure to load stats
+      });
+    })();
+  </script>
+
+{% endblock %}

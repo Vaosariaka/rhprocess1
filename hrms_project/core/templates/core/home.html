@@ -1,0 +1,309 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}RH - Tableau de bord{% endblock %}
+
+{% block header %}Pilotage opérationnel{% endblock %}
+{% block subheader %}Vue consolidée des indicateurs RH, congés et suivi de paie pour la période sélectionnée.{% endblock %}
+
+{% block content %}
+  <section class="page-section">
+    <div class="section-header">
+      <h3>Filtres d'analyse</h3>
+      <p class="section-subtitle">Ajustez la période et ciblez un collaborateur pour le détail</p>
+    </div>
+    <form method="get" class="filter-bar">
+      <label>
+        Année
+        <select name="year" class="form-input">
+          {% for year in year_choices %}
+            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Mois
+        <select name="month" class="form-input">
+          {% for month in month_choices %}
+            <option value="{{ month.value }}" {% if month.value == selected_month %}selected{% endif %}>{{ month.label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Employé
+        <select name="employee" class="form-input">
+          <option value="">Tous</option>
+          {% for emp in employee_choices %}
+            <option value="{{ emp.id }}" {% if emp.id == selected_employee_id %}selected{% endif %}>{{ emp.label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Mois (employé)
+        <select name="employee_month" class="form-input">
+          {% for month in month_choices %}
+            <option value="{{ month.value }}" {% if month.value == employee_month %}selected{% endif %}>{{ month.label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Année (employé)
+        <select name="employee_year" class="form-input">
+          {% for year in year_choices %}
+            <option value="{{ year }}" {% if year == employee_year %}selected{% endif %}>{{ year }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit" class="btn btn-primary">Afficher</button>
+  <a href="{{ request.path }}" class="btn btn-secondary ml-8">Réinitialiser</a>
+    </form>
+  </section>
+
+  <section class="page-section">
+    <div class="section-header">
+      <h3>Indicateurs clés</h3>
+      <p class="section-subtitle">Synthèse temps réel des volumes RH</p>
+    </div>
+    <div class="cards">
+      <div class="card accent">
+        <strong>Effectif</strong>
+        <div class="card-value">{{ employees_count }}</div>
+        <div class="card-subtext">Contrats actifs: {{ contracts_active }}</div>
+      </div>
+      <div class="card">
+        <strong>Congés en attente</strong>
+        <div class="card-value">{{ pending_leaves }}</div>
+        <div class="card-subtext">Demandes non traitées</div>
+      </div>
+      <div class="card">
+        <strong>Alertes ouvertes</strong>
+        <div class="card-value">{{ alerts_open }}</div>
+        <div class="card-subtext">Alerte(s) nécessitant action</div>
+      </div>
+      <div class="card">
+        <strong>Dernière paie</strong>
+        <div class="card-value small">{{ last_payroll }}</div>
+        <div class="card-subtext">Générée / synchronisée</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="section-header">
+      <h3>Effectif par genre</h3>
+      <p class="section-subtitle">Répartition actuelle des collaborateurs</p>
+    </div>
+    {% if gender_data %}
+      <table class="table">
+        <thead><tr><th>Genre</th><th>Nombre</th></tr></thead>
+        <tbody>
+          {% for g in gender_data %}
+            <tr><td>{{ g.gender }}</td><td>{{ g.headcount }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="card-subtext empty-placeholder">Données non disponibles</div>
+    {% endif %}
+  </section>
+
+  <h3>Vue mensuelle — {{ selected_month_label }} {{ selected_year }}</h3>
+  <div class="monthly-metrics">
+    <div class="metric-panel">
+      <h4>Absences</h4>
+      <ul>
+        <li><span>Total</span><span>{{ monthly_absences }}</span></li>
+        <li><span>Non justifiées</span><span>{{ monthly_absences_unjustified }}</span></li>
+        <li><span>Justifiées</span><span>{{ monthly_absences_justified }}</span></li>
+      </ul>
+    </div>
+    <div class="metric-panel">
+      <h4>Congés</h4>
+      <ul>
+        <li><span>Total (toutes décisions)</span><span>{{ monthly_leaves_total }}</span></li>
+        <li><span>En attente</span><span>{{ monthly_leaves_pending }}</span></li>
+        <li><span>Approuvés</span><span>{{ monthly_leaves_approved }}</span></li>
+      </ul>
+    </div>
+    <div class="metric-panel">
+      <h4>Retards</h4>
+      <ul>
+        <li><span>Occurrences</span><span>{{ monthly_lates }}</span></li>
+        <li><span>Minutes cumulées</span><span>{{ monthly_late_minutes }}</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="page-section">
+    <div class="section-header">
+      <h3>Vue annuelle — {{ selected_year }}</h3>
+      <p class="section-subtitle">Comparaison mois par mois</p>
+    </div>
+    <div class="year-grid">
+      {% for month in yearly_overview %}
+        <div class="year-card">
+          <div class="month-label">{{ month.label }}</div>
+          <div class="year-metric"><span>Absences</span><strong>{{ month.absences }}</strong></div>
+          <div class="year-metric"><span>Congés</span><strong>{{ month.leaves }}</strong></div>
+          <div class="year-metric"><span>Retards</span><strong>{{ month.late }}</strong></div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <h3>Suivi détaillé par employé</h3>
+  {% if employee_selected %}
+    <div class="summary-note">
+      Historique de <strong>{{ employee_selected }}</strong> pour <strong>{{ employee_month_label }} {{ employee_year }}</strong>.
+      {% if employee_month_summary %}
+        Absences: {{ employee_month_summary.absences }} · Congés: {{ employee_month_summary.leaves }} · Retards: {{ employee_month_summary.late_occurrences }} ({{ employee_month_summary.late_minutes }} min) · Heures travaillées: {{ employee_month_summary.worked_hours }} h.
+      {% endif %}
+    </div>
+    <div class="monthly-metrics">
+      <div class="metric-panel">
+        <h4>Absences du mois</h4>
+        {% if employee_absences_detail %}
+          <table class="table">
+            <thead><tr><th>Date</th><th>Motif</th><th>Justifiée</th></tr></thead>
+            <tbody>
+              {% for item in employee_absences_detail %}
+                <tr>
+                  <td>{{ item.date }}</td>
+                  <td>{{ item.reason|default:"-" }}</td>
+                  <td>{% if item.justified %}Oui{% else %}Non{% endif %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="card-subtext empty-placeholder">Aucune absence sur ce mois</div>
+        {% endif %}
+      </div>
+      <div class="metric-panel">
+        <h4>Congés du mois</h4>
+        {% if employee_leaves_detail %}
+          <table class="table">
+            <thead><tr><th>Type</th><th>Période</th><th>Statut</th></tr></thead>
+            <tbody>
+              {% for leave in employee_leaves_detail %}
+                <tr>
+                  <td>{{ leave.type }}</td>
+                  <td>{{ leave.start_date }} → {{ leave.end_date }}</td>
+                  <td>{{ leave.status }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="card-subtext empty-placeholder">Aucun congé enregistré</div>
+        {% endif %}
+      </div>
+      <div class="metric-panel">
+        <h4>Retards du mois</h4>
+        {% if employee_lates_detail %}
+          <table class="table">
+            <thead><tr><th>Date</th><th>Minutes</th><th>Minutes travaillées</th></tr></thead>
+            <tbody>
+              {% for late in employee_lates_detail %}
+                <tr>
+                  <td>{{ late.date }}</td>
+                  <td>{{ late.minutes_late }}</td>
+                  <td>{{ late.worked_minutes }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="card-subtext empty-placeholder">Aucun retard noté</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <h3>Historique de paie de l'employé</h3>
+    {% if employee_payroll_history %}
+      <table class="table">
+        <thead><tr><th>Période</th><th>Brut</th><th>Net</th><th>Statut</th><th>État</th></tr></thead>
+        <tbody>
+          {% for payroll in employee_payroll_history %}
+            <tr {% if payroll.year == employee_year and payroll.month == employee_month %}style="background:#e0f3ff"{% endif %}>
+              <td>{{ payroll.month_label }} {{ payroll.year }}</td>
+              <td>{{ payroll.gross|floatformat:0 }} Ar</td>
+              <td>{{ payroll.net|floatformat:0 }} Ar</td>
+              <td>{{ payroll.status }}</td>
+              <td>{{ payroll.etat }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="card-subtext empty-placeholder">Aucun bulletin enregistré pour cet employé</div>
+    {% endif %}
+  {% else %}
+    <div class="card-subtext empty-placeholder">Sélectionnez un employé pour voir ses historiques détaillés.</div>
+  {% endif %}
+
+  <h3>Liens rapides</h3>
+  <ul class="links">
+    <li><a href="/api/employees/">Gestion des employés (API)</a></li>
+    <li><a href="/api/leaves/">Demandes de congés (API)</a></li>
+    <li><a href="/api/payrolls/">Paies (API)</a></li>
+  <li><a href="{% url 'import_payroll_upload' %}">Importer ETAT DE PAIE</a> (interface)</li>
+  <li><a href="{% url 'export_employees' %}">Exporter employés (XLSX)</a></li>
+    <li><a href="/admin/">Administration</a></li>
+    <li><a href="/competency/cartography/">Cartographie des compétences</a></li>
+    <li><a href="/competency/match/">Matching candidats</a></li>
+    <li><a href="/planner/training/">Suggestions de formation</a></li>
+    <li><a href="/reports/">Rapports générés</a></li>
+  </ul>
+
+  <hr />
+  <div class="summary-note">Résumé: les fonctions de base (CRUD employés, congés, paie simple, imports/exports) sont présentes. Voir le rapport détaillé dans l'interface RH ou demandez un état complet.</div>
+
+{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'core/css/chatbot.css' %}">
+{% endblock %}
+
+{% block extra_scripts %}
+  <div id="chatbot-widget">
+    <div id="chatbot-toggle">Chat RH</div>
+    <div id="chatbot-window">
+      <div class="header">
+        <div>
+          <div class="chatbot-title">Chat RH</div>
+          <small class="chatbot-mode" id="chatbot-mode-label">Assistant data RH</small>
+        </div>
+      </div>
+      <div id="chatbot-status" class="chatbot-status">Posez une question sur les congés, la paie ou les absences…</div>
+      <div id="chatbot-topics" class="topics"></div>
+      <div class="chatbot-hints" id="chatbot-hints" aria-live="polite">
+        <strong>Idées :</strong>
+        <ul>
+          <li>« Qui est en congé en novembre ? »</li>
+          <li>« Combien reste à payer sur la paie d'octobre ? »</li>
+          <li>« Top absences des 30 derniers jours »</li>
+        </ul>
+      </div>
+      <div class="chatbot-employee-container">
+        <label for="chatbot-employee" class="chatbot-employee-label">Pour quel employé ?</label>
+        <select id="chatbot-employee" class="chatbot-employee-select" title="Choisir un employé" aria-label="Choisir un employé">
+          <option value="">— Aucun — (poser une question générale)</option>
+          {% for emp in employee_choices %}
+            <option value="{{ emp.id }}" {% if emp.id == selected_employee_id %}selected{% endif %}>{{ emp.label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="chatbot-date-container">
+        <label for="chatbot-date" class="chatbot-date-label">Date (optionnelle)</label>
+        <input type="date" id="chatbot-date" class="chatbot-date-input" title="Date (optionnelle)" aria-label="Date (optionnelle)" />
+      </div>
+      <div class="messages" id="chatbot-messages"></div>
+      <div class="input-row">
+        <input type="text" id="chatbot-input" placeholder="Écrivez votre message pour le RH ou posez une question (FAQ)" />
+        <button class="send" id="chatbot-send">Envoyer</button>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'core/js/chatbot.js' %}"></script>
+{% endblock %}

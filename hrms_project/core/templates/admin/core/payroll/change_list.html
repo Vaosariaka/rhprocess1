@@ -1,0 +1,14 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+  {% if reports_url %}
+    <div class="object-tools">
+      <ul class="object-tools">
+        <li>
+          <a class="addlink" href="{{ reports_url }}">Télécharger rapport</a>
+        </li>
+      </ul>
+    </div>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}

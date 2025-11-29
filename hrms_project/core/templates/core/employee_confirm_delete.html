@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer employé{% endblock %}
+
+{% block content %}
+  <h1>Supprimer employé</h1>
+  <p>Confirmer la suppression de {{ object }} ?</p>
+  <form method="post">{% csrf_token %}
+    <button type="submit">Oui, supprimer</button>
+    <a href="{%% url 'employee_list' %%}">Annuler</a>
+  </form>
+{% endblock %}

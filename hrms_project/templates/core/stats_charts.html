@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Statistiques RH{% endblock %}
+{% block content %}
+<h1>Statistiques RH (basiques)</h1>
+<canvas id="chart1" width="600" height="200"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+<script>
+fetch('/stats/absenteeism-monthly/')
+  .then(r => r.json())
+  .then(data => {
+    const labels = data.data.map(d => d.month);
+    const vals = data.data.map(d => d.absence_days);
+    const ctx = document.getElementById('chart1').getContext('2d');
+    new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Absence days', data: vals }] } });
+  });
+</script>
+{% endblock %}

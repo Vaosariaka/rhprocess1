@@ -1,0 +1,31 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <div class="module">
+    <h1>{{ title }}</h1>
+    <table class="listing">
+      <thead>
+        <tr><th>Rapport</th><th>Formats</th><th>Dernière modification</th><th>Taille (octets)</th></tr>
+      </thead>
+      <tbody>
+      {% for base, files in reports.items %}
+        <tr>
+          <td><strong>{{ base }}</strong></td>
+          <td>
+            {% if files.xlsx %}
+              <a class="button" href="{% url 'admin:hr_report_download' files.xlsx.name %}">XLSX</a>
+            {% endif %}
+            {% if files.pdf %}
+              <a class="button" href="{% url 'admin:hr_report_download' files.pdf.name %}">PDF</a>
+            {% endif %}
+          </td>
+          <td>{{ files.xlsx.mtime|default:files.pdf.mtime|date:"Y-m-d H:i" }}</td>
+          <td>{{ files.xlsx.size|default:files.pdf.size }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4">Aucun rapport trouvé dans le dossier <code>exports/</code>.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

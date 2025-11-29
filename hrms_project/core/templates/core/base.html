@@ -1,0 +1,68 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}RH — Application{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'core/css/theme.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">RH</div>
+        <div>
+          <div class="company-name">Centre RH</div>
+          <div class="company-tagline">Pilotage &amp; Paie</div>
+        </div>
+      </div>
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Tableau de bord</a></li>
+          <li class="nav-item"><a class="nav-link {% if '/rh/dashboard' in request.path %}active{% endif %}" href="{% url 'rh_dashboard' %}">KPI RH</a></li>
+          <li class="nav-item"><a class="nav-link {% if '/employees' in request.path %}active{% endif %}" href="{% url 'employee_list' %}">Employés</a></li>
+          <li class="nav-item"><a class="nav-link {% if '/leaves' in request.path %}active{% endif %}" href="{% url 'leave_list' %}">Congés &amp; absences</a></li>
+          <li class="nav-item"><a class="nav-link {% if '/planner' in request.path and '/planner/training' not in request.path %}active{% endif %}" href="{% url 'planner_calendar' %}">Planner RH</a></li>
+          <li class="nav-item"><a class="nav-link {% if '/competency' in request.path %}active{% endif %}" href="{% url 'competency_cartography_page' %}">Compétences</a></li>
+          <li class="nav-item"><a class="nav-link {% if '/reports' in request.path %}active{% endif %}" href="{% url 'reports_page' %}">Rapports</a></li>
+          <li class="nav-item"><a class="nav-link {% if '/planner/training' in request.path %}active{% endif %}" href="{% url 'planner_training' %}">Formations</a></li>
+        </ul>
+        {% block sidebar_extra %}{% endblock %}
+      </nav>
+      <div class="summary-note sidebar-tip">
+        <strong>Astuce</strong><br>
+        Les exports/ imports paie restent accessibles depuis « Actions rapides ».
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <div class="topbar">
+        <div class="topbar-title">{% block topbar_title %}Centre RH — Portail opérationnel{% endblock %}</div>
+        <div class="topbar-actions">
+          {% block topbar_actions %}
+            <a class="btn btn-secondary" href="{% url 'export_employees' %}">Exporter employés</a>
+            <a class="btn btn-primary" href="{% url 'import_payroll_upload' %}">Importer paie</a>
+          {% endblock %}
+        </div>
+      </div>
+
+      <main class="main-content with-topbar">
+        {% block hero %}
+          <header class="hero">
+            <div class="hero-title">{% block header %}Ressources Humaines{% endblock %}</div>
+            <p class="hero-subtitle">
+              {% block subheader %}Suivez vos effectifs, vos campagnes de paie et vos actions RH dans une interface homogène.{% endblock %}
+            </p>
+          </header>
+        {% endblock %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

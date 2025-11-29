@@ -1,0 +1,114 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% load admin_dashboard %}
+
+{% block content %}
+  {% admin_kpis as kpis %}
+  <section class="admin-hero">
+    <div>
+      <p class="eyebrow">Bienvenue dans l'espace RH</p>
+      <h1>Supervisez vos effectifs, congés et paies en un clin d'œil.</h1>
+      <p class="subtitle">Utilisez les actions rapides ou parcourez les fonctionnalités détaillées ci-dessous.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="{% url 'admin:core_employee_add' %}">➕ Nouvel employé</a>
+        <a class="button ghost" href="{% url 'admin:hr_dashboard' %}">📊 Tableau de bord RH</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <p class="label">Présences du {{ kpis.today }}</p>
+      <h2>{{ kpis.presence_today }}</h2>
+      <p class="muted">Présences enregistrées aujourd'hui</p>
+      <div class="hero-split">
+        <div>
+          <p class="label">Retards</p>
+          <strong>{{ kpis.late_today }}</strong>
+        </div>
+        <div>
+          <p class="label">Paies du mois</p>
+          <strong>{{ kpis.payrolls_month }}</strong>
+        </div>
+      </div>
+      <a class="cta-link" href="{% url 'admin:core_presence_changelist' %}">Consulter les présences →</a>
+    </div>
+  </section>
+
+  <section class="admin-kpi-grid">
+    <article>
+      <p class="label">Employés</p>
+      <h3>{{ kpis.total_employees }}</h3>
+      <p class="muted">{{ kpis.active_employees }} actifs</p>
+    </article>
+    <article>
+      <p class="label">Alertes ouvertes</p>
+      <h3>{{ kpis.open_alerts }}</h3>
+      <p class="muted"><a href="{% url 'admin:core_alerte_changelist' %}">Voir les alertes</a></p>
+    </article>
+    <article>
+      <p class="label">Demandes de congé en attente</p>
+      <h3>{{ kpis.pending_leaves }}</h3>
+      <p class="muted"><a href="{% url 'admin:core_leaverequest_changelist' %}?status__exact=REQUESTED">Traiter</a></p>
+    </article>
+  </section>
+
+  <section class="admin-quick-actions">
+    <article>
+      <h4>Congés & absences</h4>
+      <p>Approuvez les congés et ajustez les compteurs.</p>
+      <div class="actions">
+        <a class="button ghost" href="{% url 'admin:core_leave_changelist' %}">Suivi des congés</a>
+        <a class="button ghost" href="{% url 'admin:core_absence_changelist' %}">Absences</a>
+      </div>
+    </article>
+    <article>
+      <h4>Paie & rapports</h4>
+      <p>Lancez les calculs, exportez les fiches et rapports de présence.</p>
+      <div class="actions">
+        <a class="button ghost" href="{% url 'admin:core_payroll_changelist' %}">Gestion de la paie</a>
+        <a class="button ghost" href="{% url 'admin:generate_presence_report' %}?format=xlsx">Rapport de présence</a>
+      </div>
+    </article>
+    <article>
+      <h4>Employés</h4>
+      <p>Mettez à jour les dossiers, documents et contrats.</p>
+      <div class="actions">
+        <a class="button ghost" href="{% url 'admin:core_employee_changelist' %}">Liste des employés</a>
+        <a class="button ghost" href="{% url 'admin:core_document_changelist' %}">Documents</a>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="admin-section-header">
+      <h2>Applications</h2>
+      <p class="muted">Toutes les fonctionnalités disponibles via l'administration Django.</p>
+    </div>
+    <div class="admin-app-grid">
+      {% for app in app_list %}
+        <article class="admin-app-card">
+          <header>
+            <h3>{{ app.name }}</h3>
+            <span>{{ app.app_label }}</span>
+          </header>
+          <ul>
+            {% for model in app.models %}
+              <li>
+                <div>
+                  <strong>{{ model.name }}</strong>
+                  {% if model.object_name %}<span class="muted">{{ model.object_name }}</span>{% endif %}
+                </div>
+                <div class="links">
+                  {% if model.add_url %}<a href="{{ model.add_url }}">Ajouter</a>{% endif %}
+                  {% if model.admin_url %}<a href="{{ model.admin_url }}">Consulter</a>{% endif %}
+                </div>
+              </li>
+            {% empty %}
+              <li class="empty">Aucun modèle disponible.</li>
+            {% endfor %}
+          </ul>
+        </article>
+      {% empty %}
+        <p>Aucune application disponible.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

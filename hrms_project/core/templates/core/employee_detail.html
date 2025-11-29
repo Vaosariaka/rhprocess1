@@ -1,0 +1,210 @@
+{% extends 'core/base.html' %}
+{% load humanize %}
+
+{% block title %}{{ employee.get_full_name }} — Fiche collaborateur{% endblock %}
+{% block header %}{{ employee.get_full_name }}{% endblock %}
+{% block subheader %}Matricule {{ employee.matricule|default:'—' }} · {{ employee.function|default:'Fonction non renseignée' }}{% endblock %}
+
+{% block content %}
+  <div class="profile-layout">
+    <div class="profile-sidebar card">
+      <div class="avatar avatar-xl">
+        {% if employee.photo %}
+          <img src="{{ employee.photo.url }}" alt="Photo de {{ employee.get_full_name }}" />
+        {% else %}
+          <span>{{ employee.get_initials }}</span>
+        {% endif %}
+      </div>
+      <div class="profile-identity">
+        <h2 class="employee-name">{{ employee.last_name|upper }} {{ employee.first_name|title }}</h2>
+        <p class="employee-meta">Matricule {{ employee.matricule|default:'—' }}</p>
+        {% if contract_badge %}
+          <span class="contract-chip contract-type-{{ contract_badge.contract.type|lower }}">{{ contract_badge.label }}</span>
+        {% endif %}
+      </div>
+      <dl class="profile-info">
+        <div>
+          <dt>Département</dt>
+          <dd>{{ employee.department|default:'—' }}</dd>
+        </div>
+        <div>
+          <dt>Service</dt>
+          <dd>{{ employee.service|default:'—' }}</dd>
+        </div>
+        <div>
+          <dt>Catégorie</dt>
+          <dd>{{ employee.category|default:'—' }}</dd>
+        </div>
+        <div>
+          <dt>Date d'embauche</dt>
+          <dd>{{ employee.hire_date|date:'d/m/Y'|default:'—' }}</dd>
+        </div>
+        <div>
+          <dt>Ancienneté</dt>
+          <dd>{{ employee.get_seniority_display|default:'—' }}</dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd><a href="mailto:{{ employee.email }}">{{ employee.email|default:'—' }}</a></dd>
+        </div>
+        <div>
+          <dt>Téléphone</dt>
+          <dd>{{ employee.phone|default:'—' }}</dd>
+        </div>
+        <div>
+          <dt>Adresse</dt>
+          <dd>{{ employee.address|default:'—' }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="profile-main">
+      <div class="card hero-card">
+        <div class="status-line">
+          <div>
+            <p class="hero-label">Statut contractuel</p>
+            {% if contract_status %}
+              <h3>{{ contract_status.message }}</h3>
+            {% else %}
+              <h3>Aucun contrat actif</h3>
+            {% endif %}
+          </div>
+          <div class="hero-metrics">
+            <div>
+              <span class="metric-label">Salaire de base</span>
+              <span class="metric-value">{{ salary_summary.current|default:employee.salary_base|floatformat:0|intcomma }} Ar</span>
+            </div>
+            <div>
+              <span class="metric-label">Dernière augmentation</span>
+              <span class="metric-value">{{ salary_summary.effective_date|date:'d/m/Y'|default:'—' }}</span>
+            </div>
+            <div>
+              <span class="metric-label">Ancienneté</span>
+              <span class="metric-value">{{ employee.get_seniority_display|default:'—' }}</span>
+            </div>
+          </div>
+        </div>
+        {% if can_manage_contract %}
+          <div class="action-buttons">
+            <form method="post" action="{% url 'employee_contract_action' employee.pk 'renew_trial' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-secondary" {% if not active_contract or active_contract.type != 'ESSAI' %}disabled{% endif %}>Renouveler essai</button>
+            </form>
+            <form method="post" action="{% url 'employee_contract_action' employee.pk 'convert_cdi' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary" {% if not active_contract %}disabled{% endif %}>Convertir en CDI</button>
+            </form>
+            <form method="post" action="{% url 'employee_contract_action' employee.pk 'terminate' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger" {% if not active_contract %}disabled{% endif %}>Terminer contrat</button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="grid grid-cols-2 gap-lg">
+        <div class="card">
+          <div class="card-header">
+            <h4>Contrat actif</h4>
+          </div>
+          {% if active_contract %}
+            <ul class="info-list">
+              <li><span>Type</span><strong>{{ active_contract.get_type_display }}</strong></li>
+              <li><span>Début</span><strong>{{ active_contract.date_start|date:'d/m/Y' }}</strong></li>
+              <li><span>Fin</span><strong>{{ active_contract.date_end|date:'d/m/Y'|default:'—' }}</strong></li>
+              <li><span>Salaire contrat</span><strong>{{ active_contract.salary|floatformat:0|intcomma }} Ar</strong></li>
+              <li><span>Renouvellements essai</span><strong>{{ active_contract.trial_renewals }}/{{ active_contract.max_trial_renewals }}</strong></li>
+            </ul>
+          {% else %}
+            <div class="empty-placeholder">Aucun contrat actif.</div>
+          {% endif %}
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h4>Prochaines échéances RH</h4>
+          </div>
+          {% if upcoming_deadlines %}
+            <ul class="deadline-list">
+              {% for deadline in upcoming_deadlines %}
+                <li class="deadline deadline-{{ deadline.severity }}">
+                  <div>
+                    <strong>{{ deadline.label }}</strong>
+                    <p>{{ deadline.date|date:'d/m/Y' }}</p>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="empty-placeholder">Aucune échéance à venir.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h4>Historique des postes</h4>
+        </div>
+        {% if position_history %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Poste / Service</th>
+                <th>Salaire</th>
+                <th>Motif</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for history in position_history %}
+                <tr>
+                  <td>
+                    {% with event_date=history.effective_date|default_if_none:history.created_at %}
+                      {{ event_date|date:'d/m/Y' }}
+                    {% endwith %}
+                  </td>
+                  <td>{{ history.old_position|default:'—' }} → {{ history.new_position|default:'—' }}<br><small>{{ history.old_service|default:'—' }} → {{ history.new_service|default:'—' }}</small></td>
+                  <td>
+                    {% if history.old_salary %}{{ history.old_salary|floatformat:0|intcomma }} Ar{% else %}—{% endif %}
+                    →
+                    {% if history.new_salary %}{{ history.new_salary|floatformat:0|intcomma }} Ar{% else %}—{% endif %}
+                  </td>
+                  <td>{{ history.reason|default:'—' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="empty-placeholder">Aucun changement de poste enregistré.</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h4>Historique contractuel</h4>
+        </div>
+        {% if contract_history %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Action</th>
+                <th>Détails</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for history in contract_history %}
+                <tr>
+                  <td>{{ history.date_action|date:'d/m/Y H:i' }}</td>
+                  <td>{{ history.action }}</td>
+                  <td>{{ history.details|default:'—' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="empty-placeholder">Pas encore d'historique.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

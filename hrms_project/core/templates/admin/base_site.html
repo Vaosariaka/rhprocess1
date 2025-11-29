@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | RH PROCESS{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">RH PROCESS – Administration</a></h1>
+{% endblock %}
+
+{% block extrastyle %}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <style>
+    :root {
+      --primary: #0f3460;
+      --primary-light: #1e4d8c;
+      --accent: #219653;
+      --gold: #ca8a04;
+      --danger: #dc2626;
+      --body-bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #e2e8f0;
+      --border: #334155;
+    }
+    body { background: var(--body-bg) !important; font-family: 'Inter', sans-serif !important; }
+    #header { background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important; border-bottom: 5px solid var(--accent) !important; }
+    #branding h1 a { color: white !important; font-weight: 800 !important; font-size: 1.9rem !important; }
+    .module, .results, #changelist-filter { background: var(--card-bg) !important; border-radius: 16px !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6) !important; }
+    .module caption, .module h2 { background: var(--primary-light) !important; color: white !important; }
+    .button, input[type=submit], .addlink { background: var(--accent) !important; border-radius: 12px !important; font-weight: 700 !important; }
+    .deletelink { background: var(--danger) !important; }
+    .object-tools a.addlink { background: linear-gradient(135deg, var(--gold), #f59e0b) !important; }
+  </style>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

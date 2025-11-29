@@ -1,0 +1,3 @@
+NOTICE:  l'extension « uuid-ossp » existe déjà, poursuite du traitement
+CREATE EXTENSION
+ERREUR:  la relation « department » existe déjà

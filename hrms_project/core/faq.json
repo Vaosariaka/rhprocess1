@@ -1,0 +1,27 @@
+[
+  {
+    "question": "Comment poser un congé ?",
+    "keywords": ["cong", "poser", "demande", "congé"],
+    "answer": "Pour poser un congé, allez dans 'Demandes de congés' et cliquez sur 'Nouvelle demande' puis renseignez la période et le motif. Votre responsable recevra une notification pour approbation."
+  },
+  {
+    "question": "Combien de jours de congé ai-je ?",
+    "keywords": ["combien", "jours", "solde", "congé"],
+    "answer": "Le solde des congés est visible dans votre fiche employé sous 'Congés'. Si vous ne le voyez pas, contactez l'administrateur RH."
+  },
+  {
+    "question": "Quand est payé le salaire ?",
+    "keywords": ["salaire", "paie", "payé", "versement"],
+    "answer": "Les bulletins sont générés chaque fin de mois; la date exacte de paiement dépend de l'entreprise. Vérifiez le calendrier de paie ou demandez au responsable paie."
+  },
+  {
+    "question": "Comment obtenir ma fiche de paie ?",
+    "keywords": ["fiche", "bulletin", "paie", "fiche de paie"],
+    "answer": "Vous pouvez télécharger votre fiche de paie depuis l'onglet 'Paies' ou via le lien 'Exporter employés' si vous avez les droits. Demandez au service RH si vous n'avez pas d'accès."
+  },
+  {
+    "question": "Qu'est-ce que la CNaPS ?",
+    "keywords": ["cnaps", "cna","sécurité sociale"],
+    "answer": "La CNaPS est la caisse nationale de prévoyance sociale; les cotisations y sont prélevées sur le salaire selon les taux en vigueur."
+  }
+]

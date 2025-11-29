@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Employés — Portail RH{% endblock %}
+{% block header %}Annuaire des collaborateurs{% endblock %}
+{% block subheader %}Consultez les fiches individuelles, déclenchez les actions contractuelles et accédez aux exports en un clic.{% endblock %}
+
+{% block content %}
+  <section class="page-section">
+    <div class="section-header">
+      <div>
+        <h3>Vue synthétique</h3>
+        <p class="section-subtitle">{{ result_count }} résultat{% if result_count > 1 %}s{% endif %} — {{ active_employee_count }} actifs · {{ archived_employee_count }} archivés</p>
+      </div>
+      <div class="flex gap-md">
+        <a class="btn btn-secondary" href="{% url 'employee_add' %}">Nouvel employé</a>
+        <a class="btn btn-primary" href="{% url 'export_employees' %}">Exporter le listing</a>
+        <a class="btn btn-secondary" href="{% url 'export_all_fiches' %}">Toutes les fiches</a>
+      </div>
+    </div>
+
+    <form method="get" class="filter-bar employee-filters">
+      <label>Recherche globale
+        <input type="search" name="q" class="form-input" value="{{ search_query }}" placeholder="Nom, matricule, fonction, département..." />
+      </label>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+        {% if search_query %}<a class="btn btn-secondary" href="{% url 'employee_list' %}">Réinitialiser</a>{% endif %}
+      </div>
+    </form>
+
+    <div class="employee-grid">
+      {% for e in employees %}
+        <a class="employee-card" href="{% url 'employee_detail' e.pk %}">
+          <div class="employee-card-header">
+            <div class="avatar avatar-md">
+              {% if e.photo %}
+                <img src="{{ e.photo.url }}" alt="Photo de {{ e.get_full_name }}" />
+              {% else %}
+                <span>{{ e.get_initials }}</span>
+              {% endif %}
+            </div>
+            <div class="employee-card-title">
+              <div class="employee-name">{{ e.last_name|upper }} {{ e.first_name|title }}</div>
+              <div class="employee-meta">Matricule {{ e.matricule|default:'—' }}</div>
+            </div>
+            {% with badge=e.get_contract_badge %}
+              {% if badge %}
+                <span class="contract-chip contract-type-{{ badge.contract.type|lower }}">{{ badge.label }}</span>
+              {% endif %}
+            {% endwith %}
+          </div>
+          <div class="employee-card-body">
+            <div class="meta-row"><span>Fonction</span><strong>{{ e.function|default:'Non renseigné' }}</strong></div>
+            <div class="meta-row"><span>Département</span><strong>{{ e.department|default:'Non renseigné' }}</strong></div>
+            <div class="meta-row"><span>Ancienneté</span><strong>{{ e.get_seniority_display|default:'—' }}</strong></div>
+          </div>
+          <div class="employee-card-footer">
+            <span class="link-hint">Voir la fiche ➜</span>
+          </div>
+        </a>
+      {% empty %}
+        <div class="empty-placeholder">Aucun employé ne correspond à votre filtre.</div>
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&amp;q={{ search_query }}{% endif %}">Précédent</a>
+        {% endif %}
+        <span>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&amp;q={{ search_query }}{% endif %}">Suivant</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

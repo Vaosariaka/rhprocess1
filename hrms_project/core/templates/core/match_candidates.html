@@ -1,0 +1,70 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Matching candidats{% endblock %}
+
+{% block content %}
+  <h2>Matching — candidats pour un poste</h2>
+  <form id="match-form">
+    <label>Compétences (séparées par des virgules):<br/><input type="text" id="competencies" style="width:60%" placeholder="Communication, Python, Management"/></label>
+    <br/>
+    <label>Description du poste (texte libre):<br/>
+      <textarea id="job_description" rows="4" style="width:80%" placeholder="Décrivez le profil requis..."></textarea>
+    </label>
+    <br/>
+    <button type="submit" class="btn btn-primary">Chercher</button>
+  </form>
+
+  <h3>Résultats</h3>
+  <div id="match-results">Aucune recherche.</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function getCookie(name){
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if(parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
+document.getElementById('match-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const comps = document.getElementById('competencies').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const job = document.getElementById('job_description').value;
+  const payload = { competencies: comps, job_description: job };
+  const resEl = document.getElementById('match-results');
+  resEl.textContent = 'Recherche…';
+  try{
+    const res = await fetch('/api/competency/match/', {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify(payload)
+    });
+    if(res.status === 403){
+      throw new Error("Accès refusé (veuillez vous authentifier ou utiliser un compte habilité).");
+    }
+    if(!res.ok) throw new Error(res.statusText || res.status);
+    const data = await res.json();
+    const results = data.candidates || data.results || [];
+    if(results.length === 0){ resEl.textContent = 'Aucun candidat trouvé.'; return; }
+    const ul = document.createElement('ul');
+    results.forEach(r=>{
+      const li = document.createElement('li');
+      const skills = (r.matching_competencies || r.matched_competencies || []).map(x=>x.competency_name || x).join(', ');
+      li.innerHTML = `<strong>${r.name || r.employee_label || 'Candidat'}</strong> — score: ${Number(r.score||0).toFixed(2)} — compétences: ${skills || '-'}`;
+      ul.appendChild(li);
+    });
+    resEl.innerHTML = '';
+    resEl.appendChild(ul);
+  }catch(err){
+    resEl.textContent = 'Erreur: ' + (err.message || err);
+  }
+});
+</script>
+{% endblock %}

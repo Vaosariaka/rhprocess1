@@ -1,0 +1,4 @@
+type,employee_id,matricule,name,period,value,baseline,deviation_pct,reason
+payroll,2,02,fitahiana mahery,2025-3,120000.0,235000.0,48.9,gross deviation >40% or zero gross
+payroll,2,02,fitahiana mahery,2025-2,120000.0,235000.0,48.9,gross deviation >40% or zero gross
+payroll,2,02,fitahiana mahery,2025-1,350000.0,120000.0,191.7,gross deviation >40% or zero gross

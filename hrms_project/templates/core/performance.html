@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Revue de performance{% endblock %}
+{% block content %}
+<h1>Revue de performance</h1>
+<form id="perf-form">
+  <label>Employé (id): <input id="employee_id"/></label><br/>
+  <label>Score: <input id="score" type="number" step="0.01"/></label><br/>
+  <label>Comments: <textarea id="comments"></textarea></label><br/>
+  <button type="button" onclick="submitPerf()">Save</button>
+</form>
+<p>
+  <button id="run-scoring" type="button">Run automated scoring</button>
+  <span id="run-status" style="margin-left:8px;color:green"></span>
+</p>
+<div id="list"></div>
+<script>
+async function submitPerf(){
+  const payload = {employee: parseInt(document.getElementById('employee_id').value), score: parseFloat(document.getElementById('score').value), comments: document.getElementById('comments').value};
+  await fetch('/api/performance-reviews/', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+  loadList();
+}
+async function loadList(){
+  const r = await fetch('/api/performance-reviews/');
+  const data = await r.json();
+  const out = document.getElementById('list'); out.innerHTML = '';
+  data.results ? data.results.forEach(p => { const d=document.createElement('div'); d.innerText = `${p.id} - ${p.employee} - ${p.score}`; out.appendChild(d); }) : data.forEach(p => { const d=document.createElement('div'); d.innerText = `${p.id} - ${p.employee} - ${p.score}`; out.appendChild(d); });
+}
+loadList();
+
+document.getElementById('run-scoring').addEventListener('click', async function(){
+  const btn = this; btn.disabled = true; document.getElementById('run-status').innerText = 'Running...';
+  try{
+    const r = await fetch('/api/performance/run/', {method: 'POST', headers: {'Content-Type':'application/json'}});
+    const j = await r.json();
+    document.getElementById('run-status').innerText = j.detail || JSON.stringify(j);
+  }catch(e){
+    document.getElementById('run-status').innerText = 'Error: ' + (e.message || e);
+  } finally{ btn.disabled = false; setTimeout(()=>{ document.getElementById('run-status').innerText = ''; }, 8000); }
+});
+</script>
+{% endblock %}

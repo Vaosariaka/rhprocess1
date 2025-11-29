@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Cartographie des compétences{% endblock %}
+
+{% block content %}
+  <h2>Cartographie des compétences</h2>
+  <p>Affiche la couverture des compétences et les employés sous-seuil.</p>
+  <div id="cartography-status">Chargement…</div>
+  <table id="cartography-table" style="width:100%;display:none">
+    <thead><tr><th>Compétence</th><th>Nombre</th><th>Score moyen</th><th>Employés sous-seuil (niveau &lt; 3)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function loadCartography(){
+  const elStatus = document.getElementById('cartography-status');
+  try{
+    const res = await fetch('/api/competency/cartography/');
+    if(!res.ok) throw new Error(res.statusText || res.status);
+    const payload = await res.json();
+    const data = payload && payload.cartography ? payload.cartography : [];
+    const table = document.getElementById('cartography-table');
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+    data.forEach(row => {
+      const under = (row.below_min_level || []).map(e => (e.name || (e.label || '')) + (e.level ? ` (lvl ${e.level})` : '') ).join(', ');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${row.name}</td><td>${row.count}</td><td>${Number(row.avg_level||0).toFixed(2)}</td><td>${under || '-'}</td>`;
+      tbody.appendChild(tr);
+    });
+    elStatus.style.display='none';
+    table.style.display='table';
+  }catch(err){
+    elStatus.textContent = 'Erreur lors du chargement: ' + (err.message || err);
+  }
+}
+document.addEventListener('DOMContentLoaded', loadCartography);
+</script>
+{% endblock %}

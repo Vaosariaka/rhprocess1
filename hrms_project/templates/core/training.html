@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Suggestions de formation{% endblock %}
+{% block content %}
+<h1>Suggestions de formation</h1>
+<form id="train-form">
+  <label>Employee id: <input id="employee"/></label><br/>
+  <label>Title: <input id="title"/></label><br/>
+  <label>Description: <textarea id="desc"></textarea></label><br/>
+  <button type="button" onclick="submitTrain()">Submit</button>
+</form>
+<div id="list"></div>
+<script>
+async function submitTrain(){
+  const payload = {employee: parseInt(document.getElementById('employee').value), title: document.getElementById('title').value, description: document.getElementById('desc').value};
+  await fetch('/api/training-suggestions/', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+  loadList();
+}
+async function loadList(){
+  const r = await fetch('/api/training-suggestions/');
+  const data = await r.json();
+  const out = document.getElementById('list'); out.innerHTML = '';
+  (data.results || data).forEach(t => { const d=document.createElement('div'); d.innerText = `${t.id} - ${t.title} (${t.employee})`; out.appendChild(d); });
+}
+loadList();
+</script>
+{% endblock %}

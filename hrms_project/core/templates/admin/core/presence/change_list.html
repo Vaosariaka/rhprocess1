@@ -1,0 +1,85 @@
+{% extends "admin/change_list.html" %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    .presence-report-panel {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+    }
+    .presence-report-panel h2 {
+      margin-top: 0;
+    }
+    .presence-report-panel p.description {
+      margin: 0 0 1rem 0;
+      color: #555;
+    }
+    .presence-report-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    .presence-report-field {
+      flex: 1 1 200px;
+    }
+    .presence-report-field label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: .25rem;
+    }
+    .presence-report-field.format-field {
+      flex: 0 0 160px;
+    }
+    .presence-report-submit {
+      flex: 0 0 auto;
+      margin-top: 1.5rem;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {% if generate_presence_url %}
+    <div class="presence-report-panel">
+      <h2>Rapport de présence</h2>
+      <p class="description">Sélectionnez une période, un service facultatif et le format désiré, puis lancez la génération. Le fichier est produit via la commande <code>generate_presence_report</code> et téléchargé immédiatement.</p>
+      <form action="{{ generate_presence_url }}" method="get" class="presence-report-form">
+        <div class="presence-report-field">
+          <label for="presence-start">Début</label>
+          <input type="date" id="presence-start" name="start" value="{{ presence_form_defaults.start }}" class="vDateField" required>
+        </div>
+        <div class="presence-report-field">
+          <label for="presence-end">Fin</label>
+          <input type="date" id="presence-end" name="end" value="{{ presence_form_defaults.end }}" class="vDateField" required>
+        </div>
+        <div class="presence-report-field">
+          <label for="presence-department">Département (optionnel)</label>
+          <select id="presence-department" name="department" class="vTextField">
+            <option value="" {% if not presence_form_defaults.department %}selected{% endif %}>Tous les départements</option>
+            {% for dept in presence_departments %}
+              <option value="{{ dept }}" {% if dept == presence_form_defaults.department %}selected{% endif %}>{{ dept }}</option>
+            {% empty %}
+              <option value="" disabled>(Aucun département enregistré)</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="presence-report-field format-field">
+          <label for="presence-format">Format</label>
+          <select id="presence-format" name="format" class="vTextField">
+            {% for fmt in presence_formats %}
+              <option value="{{ fmt }}" {% if fmt == presence_form_defaults.format %}selected{% endif %}>{{ fmt|upper }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="presence-report-submit">
+          <button type="submit" class="button default">Générer et télécharger</button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+
+  {{ block.super }}
+{% endblock %}

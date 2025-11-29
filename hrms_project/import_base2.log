@@ -1,0 +1,52 @@
+psql:base2.sql:4: ERREUR:  la base de données « hrms » existe déjà
+Vous êtes maintenant connecté à la base de données « hrms » en tant qu'utilisateur « postgres ».
+psql:base2.sql:8: NOTICE:  l'extension « uuid-ossp » existe déjà, poursuite du traitement
+CREATE EXTENSION
+psql:base2.sql:16: ERREUR:  la relation « department » existe déjà
+psql:base2.sql:21: ERREUR:  la relation « gender » existe déjà
+psql:base2.sql:42: ERREUR:  la relation « employee » existe déjà
+psql:base2.sql:44: ERREUR:  la relation « idx_employee_department » existe déjà
+psql:base2.sql:45: ERREUR:  la relation « idx_employee_hire_date » existe déjà
+psql:base2.sql:65: ERREUR:  la relation « contract » existe déjà
+psql:base2.sql:74: ERREUR:  la relation « contract_history » existe déjà
+psql:base2.sql:76: ERREUR:  la relation « idx_contract_employee » existe déjà
+psql:base2.sql:92: ERREUR:  la relation « document » existe déjà
+psql:base2.sql:94: ERREUR:  la relation « idx_document_employee » existe déjà
+psql:base2.sql:114: ERREUR:  la relation « leave_request » existe déjà
+psql:base2.sql:123: ERREUR:  la relation « leave_history » existe déjà
+psql:base2.sql:125: ERREUR:  la relation « idx_leave_employee » existe déjà
+CREATE VIEW
+psql:base2.sql:143: ERREUR:  la relation « absence » existe déjà
+psql:base2.sql:145: ERREUR:  la relation « idx_absence_employee_date » existe déjà
+psql:base2.sql:160: ERREUR:  la relation « presence » existe déjà
+psql:base2.sql:162: ERREUR:  la relation « idx_presence_employee_date » existe déjà
+psql:base2.sql:199: ERREUR:  la relation « payroll » existe déjà
+psql:base2.sql:201: ERREUR:  la relation « idx_payroll_employee_ym » existe déjà
+psql:base2.sql:213: ERREUR:  la relation « advance » existe déjà
+psql:base2.sql:225: ERREUR:  la relation « alert » existe déjà
+psql:base2.sql:227: ERREUR:  la relation « idx_alert_employee » existe déjà
+psql:base2.sql:238: ERREUR:  la relation « training_budget » existe déjà
+psql:base2.sql:246: ERREUR:  la relation « training_expense » existe déjà
+psql:base2.sql:257: ERREUR:  la relation « audit_history » existe déjà
+psql:base2.sql:271: ERREUR:  la relation « payroll_config » existe déjà
+psql:base2.sql:276: ERREUR:  la relation « system_config » existe déjà
+INSERT 0 0
+INSERT 0 0
+CREATE FUNCTION
+psql:base2.sql:303: ERREUR:  le trigger « trg_employee_updated_at » de la relation « employee » existe déjà
+psql:base2.sql:304: ERREUR:  le trigger « trg_contract_updated_at » de la relation « contract » existe déjà
+CREATE FUNCTION
+CREATE FUNCTION
+psql:base2.sql:348: ERREUR:  le trigger « trg_contract_history » de la relation « contract » existe déjà
+CREATE FUNCTION
+psql:base2.sql:368: ERREUR:  le trigger « trg_leave_history » de la relation « leave_request » existe déjà
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE FUNCTION
+CREATE FUNCTION
+psql:base2.sql:520: ERREUR:  la relation « idx_leave_start » existe déjà
+psql:base2.sql:521: ERREUR:  la relation « idx_payroll_year_month » existe déjà

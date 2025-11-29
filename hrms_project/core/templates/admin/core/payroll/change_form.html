@@ -1,0 +1,113 @@
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+  {# Show header with employee name and a PDF download button when available #}
+  {% if diag_employee or original %}
+    <div style="margin-bottom:1rem; padding: .75rem; border:1px solid #ddd; border-radius:6px; background:#fff">
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <h3 style="margin:0">Diagnostic paie — {{ diag_employee|default:original.employee }}</h3>
+        {% if original %}
+          <div>
+            {% url 'export_payroll_pdf' original.pk as pdf_url %}
+            {# Force both XLSX + PDF (ZIP) so the export always includes the exact Excel model and the PDF if conversion succeeds #}
+            <a class="button" href="{{ pdf_url }}?format=both" target="_blank">Télécharger (XLSX+PDF)</a>
+          </div>
+        {% endif %}
+      </div>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+        <div style="flex:1 1 360px;">
+          <strong>Contrat actif</strong>
+          {% if diag_contract %}
+            <p>Type: {{ diag_contract.type }} — Salaire contrat: {{ diag_contract.salary|floatformat:2 }} Ar</p>
+            <p>Période: {{ diag_contract.date_start }} → {{ diag_contract.date_end|default:'(en cours)' }}</p>
+            <p>Temps plein: {{ diag_contract.full_time }}</p>
+          {% else %}
+            <p>Aucun contrat actif trouvé pour cet employé.</p>
+          {% endif %}
+        </div>
+
+        <div style="flex:1 1 360px;">
+          <strong>Presences ({{ diag_month }}/{{ diag_year }})</strong>
+          {% if diag_presences %}
+            <ul style="margin:.25rem 0 0 1rem; padding:0;">
+              {% for p in diag_presences %}
+                <li>{{ p.date }} — Worked: {{ p.worked_minutes }}m — Overtime: {{ p.overtime_minutes }}m — Late: {{ p.minutes_late }}m — Pause: {{ p.pause_minutes }}m{% if p.pause_excess_minutes %} (excès {{ p.pause_excess_minutes }}m){% endif %}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            {% if diag_assume_full_work %}
+              <p>Aucun enregistrement de présence pour ce mois — on suppose que l'employé a travaillé normalement (aucune prime ni retenue).</p>
+            {% else %}
+              <p>Aucune présence enregistrée ce mois.</p>
+            {% endif %}
+          {% endif %}
+          {% if diag_absences %}
+            <ul style="margin:.25rem 0 0 1rem; padding:0;">
+              {% for a in diag_absences %}
+                <li>{{ a.date }} — {{ a.reason|default:'(sans raison)' }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>Aucune absence non justifiée ce mois.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <hr style="margin:.75rem 0">
+      <div>
+        <strong>Historique (contrats / positions / autres)</strong>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+          <div style="flex:1 1 45%">
+            <strong>Contract history</strong>
+            <ul style="margin:.25rem 0 0 1rem; padding:0;">
+              {% for ch in diag_contract_histories %}
+                <li>{{ ch.date_action }} — {{ ch.action }} — {{ ch.details|truncatechars:120 }}</li>
+              {% empty %}
+                <li>Aucun historique de contrat</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div style="flex:1 1 45%">
+            <strong>Position changes</strong>
+            <ul style="margin:.25rem 0 0 1rem; padding:0;">
+              {% for ph in diag_position_histories %}
+                <li>{{ ph.effective_date|default:ph.created_at }} — {{ ph.old_position }} → {{ ph.new_position }} — {{ ph.old_salary }} → {{ ph.new_salary }}</li>
+              {% empty %}
+                <li>Aucun changement de poste</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <hr style="margin:.75rem 0">
+      <div>
+        <strong>Calcul paie (détails)</strong>
+        {% if diag_payroll_breakdown %}
+          <table style="width:100%; border-collapse:collapse;">
+            <tr><td style="padding:.25rem; border:1px solid #eee">Salaire base</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.salary_base }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Heures travaillées</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.hours_worked }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Heures supp. détectées</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.overtime_hours|default:0 }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Rémunération heures supp.</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.details.overtime_pay|default:0 }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Taux horaire</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.hourly_rate }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Brut calculé</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.gross }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Prime nuit</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.details.night_premium|default:0 }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Prime dimanche</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.details.sunday_premium|default:0 }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Prime jours fériés</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.details.holiday_premium|default:0 }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">CNAPS salarié</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.cnaps_employee }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">OSTIE</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.ostie }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Déductions absences</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.absence_deduction }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Total retenues</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.deductions }}</td></tr>
+            <tr><td style="padding:.25rem; border:1px solid #eee">Salaire net</td><td style="padding:.25rem; border:1px solid #eee">{{ diag_payroll_breakdown.net }}</td></tr>
+          </table>
+          <p style="margin:.5rem 0 0 0; color:#666">Remarque : le PDF utilise ces mêmes valeurs (ou des arrondis) — comparez "Brut calculé" et "Salaire net" avec le PDF exporté pour vérifier différences d'arrondis ou primes non prises en compte.</p>
+        {% else %}
+          <p>Impossible de calculer la paie automatiquement pour ce mois/employee.</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {{ block.super }}
+
+{% endblock %}

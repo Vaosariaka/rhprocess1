@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Leaves{% endblock %}
+
+{% block content %}
+<h1>Leaves</h1>
+<form method="get" action="{% url 'export_leaves' %}">
+  <a href="{% url 'leave_add' %}">Ajouter un congé</a>
+  &nbsp;|&nbsp;
+  <button type="submit" name="non_empty" value="0">Exporter (tout)</button>
+  <button type="submit" name="non_empty" value="1">Exporter (non vide)</button>
+</form>
+<table>
+  <thead>
+    <tr><th>Employee</th><th>Type</th><th>Start</th><th>End</th><th>Days</th><th>Status</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for l in leaves %}
+    <tr id="leave-row-{{ l.pk }}">
+      <td class="cell-employee">{{ l.employee }}</td>
+      <td class="cell-type">{{ l.get_leave_type_display }}</td>
+      <td class="cell-start">{{ l.start_date }}</td>
+      <td class="cell-end">{{ l.end_date }}</td>
+      <td class="cell-days">{{ l.days }}</td>
+      <td class="cell-status">{{ l.get_status_display }}</td>
+      <td class="cell-actions">
+        <a href="{% url 'leave_edit' l.pk %}">Edit</a> |
+        <a href="{% url 'leave_delete' l.pk %}">Delete</a>
+        {% if can_approve and l.status == 'PENDING' %}
+          |
+          <form method="post" action="{% url 'approve_leave' l.pk %}" class="ajax-approve-form" data-leave-id="{{ l.pk }}">
+            {% csrf_token %}
+            <button type="submit" name="action" value="approve">Approuver</button>
+            <button type="submit" name="action" value="reject">Refuser</button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No leaves found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+  </div>
+{% endif %}
+<script>
+// Simple AJAX approval script: intercept forms with class 'ajax-approve-form'
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.ajax-approve-form').forEach(function(form){
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      const leaveId = form.dataset.leaveId;
+      const formData = new FormData(form);
+      const submitter = ev.submitter || document.activeElement;
+      if (submitter && submitter.name) {
+        formData.set(submitter.name, submitter.value);
+      }
+      const url = form.action;
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData,
+        credentials: 'same-origin',
+      }).then(function(resp){
+        if (!resp.ok) throw new Error('Network response was not ok');
+        return resp.json();
+      }).then(function(data){
+        // update row status text
+        const row = document.getElementById('leave-row-' + leaveId);
+        if (row) {
+          const statusCell = row.querySelector('.cell-status');
+          statusCell.textContent = data.status || data.leave_status || '—';
+          // remove action buttons
+          const actionsCell = row.querySelector('.cell-actions');
+          const forms = actionsCell.querySelectorAll('.ajax-approve-form');
+          forms.forEach(function(f){ f.remove(); });
+        }
+      }).catch(function(err){
+        console.error('Approval failed', err);
+        alert('Erreur lors de l\'approbation.');
+      });
+    });
+  });
+});
+</script>
+{% endblock %}

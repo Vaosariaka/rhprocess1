@@ -1,0 +1,144 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Tableau de bord RH{% endblock %}
+
+{% block content %}
+  <div class="module">
+    <h1>{{ title }}</h1>
+  <p><a class="button" href="/admin/reports/presence/generate/?format=xlsx">Générer et télécharger le relevé de présence</a></p>
+    <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+      <div style="min-width:220px; padding:1rem; border:1px solid #ddd; border-radius:6px;" id="card-headcount">
+        <h3>Effectif</h3>
+        <p>Total: <strong id="stat-total">{{ total_employees }}</strong></p>
+        <p>Actifs: <strong id="stat-active">{{ active_employees }}</strong></p>
+        <p>CDI: <strong id="stat-cdi">{{ cdi_count }}</strong> — CDD: <strong id="stat-cdd">{{ cdd_count }}</strong></p>
+      </div>
+      <div style="min-width:220px; padding:1rem; border:1px solid #ddd; border-radius:6px;" id="card-indicators">
+        <h3>Autres indicateurs</h3>
+        <p>Age moyen: <strong id="stat-avg-age">{{ avg_age|default:'N/A' }}</strong></p>
+        <p>Absence (12m): <strong id="stat-absence-days">{{ absence_days }}</strong> jours (<span id="stat-absence-rate">{{ absence_rate }}</span> / employé)</p>
+        <p>Turnover (12m): <strong id="stat-turnover">{{ turnover }}%</strong></p>
+      </div>
+    </div>
+
+    <hr style="margin:1rem 0;" />
+
+    <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+      <div style="flex:1 1 420px;">
+        <h3>Répartition par genre</h3>
+        <canvas id="genderChart" width="400" height="250"></canvas>
+      </div>
+
+      <div style="flex:1 1 420px;">
+        <h3>Top départements</h3>
+        <canvas id="deptChart" width="400" height="250"></canvas>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:2rem; flex-wrap:wrap; margin-top:1rem;">
+      <div style="flex:1 1 420px;">
+        <h3>Distribution d'âge</h3>
+        <canvas id="ageChart" width="400" height="250"></canvas>
+      </div>
+      <div style="flex:1 1 420px;">
+        <h3>Types de contrat</h3>
+        <canvas id="contractChart" width="400" height="250"></canvas>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:2rem; flex-wrap:wrap; margin-top:1rem;">
+      <div style="flex:1 1 420px;">
+        <h3>Ancienneté (buckets)</h3>
+        <canvas id="tenureChart" width="400" height="250"></canvas>
+      </div>
+    </div>
+
+    <p style="margin-top:1rem;">Vous pouvez générer des rapports détaillés via la commande management <code>python manage.py hr_report</code>.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <script>
+    // Fetch stats and render charts dynamically
+    async function fetchStats() {
+      try {
+  const statsUrl = window.location.origin + '/admin/hr-stats.json';
+  const res = await fetch(statsUrl);
+        if (!res.ok) throw new Error('Failed to fetch stats');
+        return await res.json();
+      } catch (e) {
+        console.error('Error fetching HR stats', e);
+        return null;
+      }
+    }
+
+    function createPie(ctx, labels, data, colors) {
+      return new Chart(ctx, { type: 'pie', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors }] }, options: { responsive: true } });
+    }
+
+    function createBar(ctx, labels, data, color) {
+      return new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [{ label: 'Effectif', data: data, backgroundColor: color }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
+    }
+
+    function createDoughnut(ctx, labels, data, colors) {
+      return new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors }] }, options: { responsive: true } });
+    }
+
+    (async function render() {
+      const stats = await fetchStats();
+      if (!stats) return;
+
+      // Update cards
+      document.getElementById('stat-total').textContent = stats.total_employees;
+      document.getElementById('stat-active').textContent = stats.active_employees;
+      document.getElementById('stat-cdi').textContent = (stats.contract_types['CDI'] || 0);
+      document.getElementById('stat-cdd').textContent = (stats.contract_types['CDD'] || 0);
+      document.getElementById('stat-avg-age').textContent = stats.age_stats && stats.age_stats.avg ? stats.age_stats.avg.toFixed(1) : 'N/A';
+      document.getElementById('stat-absence-days').textContent = stats.absence_days || '{{ absence_days }}';
+      document.getElementById('stat-absence-rate').textContent = stats.absence_rate || '{{ absence_rate }}';
+      document.getElementById('stat-turnover').textContent = stats.turnover || '{{ turnover }}';
+
+      // Gender chart
+      try {
+        const gctx = document.getElementById('genderChart').getContext('2d');
+        const genderLabels = Object.keys(stats.gender_counts || {});
+        const genderData = genderLabels.map(k => stats.gender_counts[k]);
+        createPie(gctx, genderLabels, genderData, ['#4e79a7','#f28e2b','#e15759','#76b7b2']);
+      } catch (e) { console.warn(e); }
+
+      // Dept chart
+      try {
+        const dctx = document.getElementById('deptChart').getContext('2d');
+        const deptLabels = stats.top_services.map(x => x[0]);
+        const deptData = stats.top_services.map(x => x[1]);
+        createBar(dctx, deptLabels, deptData, '#59a14f');
+      } catch (e) { console.warn(e); }
+
+      // Age chart (buckets)
+      try {
+        const actx = document.getElementById('ageChart').getContext('2d');
+        const ageBuckets = stats.age_stats && stats.age_stats.buckets ? stats.age_stats.buckets : {};
+        const ageLabels = Object.keys(ageBuckets);
+        const ageData = ageLabels.map(k => ageBuckets[k]);
+        createBar(actx, ageLabels, ageData, '#8e5ea2');
+      } catch (e) { console.warn(e); }
+
+      // Contract types
+      try {
+        const cctx = document.getElementById('contractChart').getContext('2d');
+        const ctLabels = Object.keys(stats.contract_types || {});
+        const ctData = ctLabels.map(k => stats.contract_types[k]);
+        createDoughnut(cctx, ctLabels, ctData, ['#4daf4a','#377eb8','#e41a1c','#984ea3','#ff7f00']);
+      } catch (e) { console.warn(e); }
+
+      // Tenure
+      try {
+        const tctx = document.getElementById('tenureChart').getContext('2d');
+        const tbLabels = Object.keys(stats.tenure_buckets || {});
+        const tbData = tbLabels.map(k => stats.tenure_buckets[k]);
+        createBar(tctx, tbLabels, tbData, '#e15759');
+      } catch (e) { console.warn(e); }
+
+    })();
+  </script>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Proposer un remplaçant{% endblock %}
+{% block content %}
+<h1>Proposer un remplaçant</h1>
+<form id="suggest-form">
+  <label>Employé à remplacer (ID): <input name="target_employee" id="target_employee"/></label><br/>
+  <label>Début: <input name="start_date" id="start_date" type="date"/></label><br/>
+  <label>Fin: <input name="end_date" id="end_date" type="date"/></label><br/>
+  <label>Fonction / hint: <input name="function_hint" id="function_hint"/></label><br/>
+  <button type="button" onclick="suggest()">Chercher</button>
+</form>
+<div id="results"></div>
+
+<script>
+async function suggest(){
+  const payload = {
+    start_date: document.getElementById('start_date').value,
+    end_date: document.getElementById('end_date').value,
+    exclude_employee: document.getElementById('target_employee').value,
+    function: document.getElementById('function_hint').value,
+    max_results: 10
+  };
+  const resp = await fetch('/api/planner/suggest-replacement/', {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+  });
+  const data = await resp.json();
+  const out = document.getElementById('results');
+  out.innerHTML = '';
+  if(data.candidates){
+    data.candidates.forEach(c => {
+      const div = document.createElement('div');
+      div.innerText = `${c.id} — ${c.name} (${c.department} / ${c.function}) [score ${c.score}]`;
+      out.appendChild(div);
+    });
+  } else if(data.error){
+    out.innerText = 'Erreur: ' + data.error;
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+NOTICE:  l'extension « uuid-ossp » existe déjà, poursuite du traitement
+CREATE EXTENSION
+ERREUR:  la relation « department » existe déjà
+ERREUR:  la relation « gender » existe déjà
+ERREUR:  la relation « employee » existe déjà
+ERREUR:  la relation « idx_employee_department » existe déjà
+ERREUR:  la relation « idx_employee_hire_date » existe déjà
+ERREUR:  la relation « contract » existe déjà
+ERREUR:  la relation « contract_history » existe déjà
+ERREUR:  la relation « idx_contract_employee » existe déjà
+ERREUR:  la relation « document » existe déjà
+ERREUR:  la relation « idx_document_employee » existe déjà
+ERREUR:  la relation « leave_request » existe déjà
+ERREUR:  la relation « leave_history » existe déjà
+ERREUR:  la relation « idx_leave_employee » existe déjà
+CREATE VIEW
+ERREUR:  la relation « absence » existe déjà
+ERREUR:  la relation « idx_absence_employee_date » existe déjà
+ERREUR:  la relation « presence » existe déjà
+ERREUR:  la relation « idx_presence_employee_date » existe déjà
+ERREUR:  la relation « payroll » existe déjà
+ERREUR:  la relation « idx_payroll_employee_ym » existe déjà
+ERREUR:  la relation « advance » existe déjà
+ERREUR:  la relation « alert » existe déjà
+ERREUR:  la relation « idx_alert_employee » existe déjà
+ERREUR:  la relation « training_budget » existe déjà
+ERREUR:  la relation « training_expense » existe déjà
+ERREUR:  la relation « audit_history » existe déjà
+ERREUR:  la relation « payroll_config » existe déjà
+ERREUR:  la relation « system_config » existe déjà
+INSERT 0 0
+INSERT 0 0
+CREATE FUNCTION
+ERREUR:  le trigger « trg_employee_updated_at » de la relation « employee » existe déjà
+ERREUR:  le trigger « trg_contract_updated_at » de la relation « contract » existe déjà
+CREATE FUNCTION
+CREATE FUNCTION
+ERREUR:  le trigger « trg_contract_history » de la relation « contract » existe déjà
+CREATE FUNCTION
+ERREUR:  le trigger « trg_leave_history » de la relation « leave_request » existe déjà
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE FUNCTION
+CREATE FUNCTION
+ERREUR:  la relation « idx_leave_start » existe déjà
+ERREUR:  la relation « idx_payroll_year_month » existe déjà

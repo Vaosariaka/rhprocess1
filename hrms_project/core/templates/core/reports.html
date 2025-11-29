@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Rapports générés{% endblock %}
+
+{% block content %}
+  <h2>Rapports générés</h2>
+  <p>Liste des rapports produits par les commandes d'analyse et autres exports.</p>
+  {% if reports %}
+    <table>
+      <thead><tr><th>Nom</th><th>Créé le</th><th>Par</th><th>Télécharger</th><th>Notes</th></tr></thead>
+      <tbody>
+        {% for r in reports %}
+          <tr>
+            <td>{{ r.name }}</td>
+            <td>{{ r.created_at }}</td>
+            <td>{{ r.created_by }}</td>
+            <td>
+              {% if r.xlsx_path %}
+                <a href="/reports/download/{{ r.id }}/">Télécharger (XLSX/PDF)</a>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td>{{ r.notes }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="card-subtext empty-placeholder">Aucun rapport trouvé.</div>
+  {% endif %}
+
+{% endblock %}

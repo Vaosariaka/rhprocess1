@@ -1,0 +1,1693 @@
+[
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "category"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "employee"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "leave"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "payroll"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "absence"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "alerte"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "contract"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "contracthistory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "document"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "historique"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "leavehistory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "presence"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "leaverequest"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "leavebalance"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "positionhistory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "core",
+    "model": "auditlog"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "clh9kzq4b8f2bo13zsvq795fcs8osoda",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2hA-8mmX7j0DAbqRUQPJMLMy3t2QzEK3r6rem4W4bzXsg9awILswyU6_W4r5SW0CfMR27zz3tq1L4lPhBx381pFe18P9O6hx1FmrYnTyGo0HmUkSgkMhi49ghMCUrcEzUDLoLAhPvigHlixoraxKwD5f6YA3mg:1vFwYk:MxttUpgTFxTi2NqNVAXCLBet1LLLfXXmLR6_wZ3r2ZE",
+    "expire_date": "2025-11-17T15:33:30.860Z"
+  }
+},
+{
+  "model": "core.category",
+  "pk": 1,
+  "fields": {
+    "name": "CDD"
+  }
+},
+{
+  "model": "core.employee",
+  "pk": 1,
+  "fields": {
+    "matricule": "sariaka",
+    "email": "sa@gmail.com",
+    "cnaps_number": "etu003240",
+    "first_name": "sariaka",
+    "last_name": "ma",
+    "category": 1,
+    "function": "manager IT",
+    "hire_date": "2025-11-03",
+    "birth_date": null,
+    "gender": null,
+    "civil_status": "",
+    "address": "",
+    "department": "",
+    "service": "",
+    "osti_number": null,
+    "salary_base": "250000.00",
+    "phone": "",
+    "photo": "",
+    "emergency_contact": null,
+    "is_active": true,
+    "archived": false
+  }
+},
+{
+  "model": "core.employee",
+  "pk": 2,
+  "fields": {
+    "matricule": "EX123",
+    "email": null,
+    "cnaps_number": null,
+    "first_name": "Jean",
+    "last_name": "Dupont",
+    "category": null,
+    "function": "",
+    "hire_date": null,
+    "birth_date": null,
+    "gender": null,
+    "civil_status": "",
+    "address": "",
+    "department": "",
+    "service": "",
+    "osti_number": null,
+    "salary_base": "0.00",
+    "phone": "",
+    "photo": "",
+    "emergency_contact": null,
+    "is_active": true,
+    "archived": false
+  }
+},
+{
+  "model": "core.contract",
+  "pk": 1,
+  "fields": {
+    "employee": 1,
+    "type": "CDD",
+    "sector": "NON_AGRI",
+    "date_start": "2025-11-03",
+    "date_end": "2026-11-03",
+    "salary": "250000.00",
+    "trial_renewals": 0,
+    "max_trial_renewals": 1,
+    "auto_convert_to_cdi": false,
+    "full_time": true,
+    "active": true,
+    "notes": "",
+    "created_at": "2025-11-03T15:42:43.413Z",
+    "updated_at": "2025-11-03T15:42:43.413Z"
+  }
+},
+{
+  "model": "core.contract",
+  "pk": 2,
+  "fields": {
+    "employee": 2,
+    "type": "CDI",
+    "sector": "NON_AGRI",
+    "date_start": "2025-01-01",
+    "date_end": null,
+    "salary": "500000.00",
+    "trial_renewals": 0,
+    "max_trial_renewals": 1,
+    "auto_convert_to_cdi": false,
+    "full_time": true,
+    "active": true,
+    "notes": "",
+    "created_at": "2025-11-03T16:01:26.077Z",
+    "updated_at": "2025-11-03T16:01:26.077Z"
+  }
+},
+{
+  "model": "core.contract",
+  "pk": 3,
+  "fields": {
+    "employee": 1,
+    "type": "CDD",
+    "sector": "NON_AGRI",
+    "date_start": "2025-11-03",
+    "date_end": "2026-11-03",
+    "salary": "250000.00",
+    "trial_renewals": 0,
+    "max_trial_renewals": 1,
+    "auto_convert_to_cdi": false,
+    "full_time": true,
+    "active": true,
+    "notes": "",
+    "created_at": "2025-11-03T16:07:19.777Z",
+    "updated_at": "2025-11-03T16:07:19.777Z"
+  }
+},
+{
+  "model": "core.leavebalance",
+  "pk": 1,
+  "fields": {
+    "employee": 1,
+    "year": 2025,
+    "entitlement_days": "2.50",
+    "used_days": "0.00"
+  }
+},
+{
+  "model": "core.leavebalance",
+  "pk": 2,
+  "fields": {
+    "employee": 2,
+    "year": 2025,
+    "entitlement_days": "2.50",
+    "used_days": "0.00"
+  }
+},
+{
+  "model": "core.payroll",
+  "pk": 1,
+  "fields": {
+    "employee": 1,
+    "month": 3,
+    "year": 2025,
+    "salary_base": "235000.00",
+    "gross_salary": "235000.00",
+    "deductions": "350000.00",
+    "net_salary": "23599.00",
+    "etat_paie": "MAJ",
+    "notes": "",
+    "created_at": "2025-11-06T14:27:43.712Z"
+  }
+},
+{
+  "model": "core.absence",
+  "pk": 1,
+  "fields": {
+    "employee": 1,
+    "date": "2025-11-06",
+    "reason": "",
+    "justified": false,
+    "created_at": "2025-11-06T15:12:14.280Z"
+  }
+},
+{
+  "model": "core.absence",
+  "pk": 2,
+  "fields": {
+    "employee": 2,
+    "date": "2025-11-06",
+    "reason": "",
+    "justified": true,
+    "created_at": "2025-11-06T15:12:54.416Z"
+  }
+},
+{
+  "model": "core.presence",
+  "pk": 1,
+  "fields": {
+    "employee": 1,
+    "date": "2025-11-06",
+    "time_in": "09:13:30",
+    "time_out": "17:13:36",
+    "minutes_late": 0,
+    "worked_minutes": 0,
+    "overtime_minutes": 0,
+    "night_minutes": 0,
+    "sunday_minutes": 0,
+    "holiday_minutes": 0,
+    "created_at": "2025-11-06T15:13:55.415Z"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add category",
+    "content_type": [
+      "core",
+      "category"
+    ],
+    "codename": "add_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change category",
+    "content_type": [
+      "core",
+      "category"
+    ],
+    "codename": "change_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete category",
+    "content_type": [
+      "core",
+      "category"
+    ],
+    "codename": "delete_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view category",
+    "content_type": [
+      "core",
+      "category"
+    ],
+    "codename": "view_category"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add employee",
+    "content_type": [
+      "core",
+      "employee"
+    ],
+    "codename": "add_employee"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change employee",
+    "content_type": [
+      "core",
+      "employee"
+    ],
+    "codename": "change_employee"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete employee",
+    "content_type": [
+      "core",
+      "employee"
+    ],
+    "codename": "delete_employee"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view employee",
+    "content_type": [
+      "core",
+      "employee"
+    ],
+    "codename": "view_employee"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add leave",
+    "content_type": [
+      "core",
+      "leave"
+    ],
+    "codename": "add_leave"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change leave",
+    "content_type": [
+      "core",
+      "leave"
+    ],
+    "codename": "change_leave"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete leave",
+    "content_type": [
+      "core",
+      "leave"
+    ],
+    "codename": "delete_leave"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view leave",
+    "content_type": [
+      "core",
+      "leave"
+    ],
+    "codename": "view_leave"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add payroll",
+    "content_type": [
+      "core",
+      "payroll"
+    ],
+    "codename": "add_payroll"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change payroll",
+    "content_type": [
+      "core",
+      "payroll"
+    ],
+    "codename": "change_payroll"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete payroll",
+    "content_type": [
+      "core",
+      "payroll"
+    ],
+    "codename": "delete_payroll"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view payroll",
+    "content_type": [
+      "core",
+      "payroll"
+    ],
+    "codename": "view_payroll"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add absence",
+    "content_type": [
+      "core",
+      "absence"
+    ],
+    "codename": "add_absence"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change absence",
+    "content_type": [
+      "core",
+      "absence"
+    ],
+    "codename": "change_absence"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete absence",
+    "content_type": [
+      "core",
+      "absence"
+    ],
+    "codename": "delete_absence"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view absence",
+    "content_type": [
+      "core",
+      "absence"
+    ],
+    "codename": "view_absence"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add alerte",
+    "content_type": [
+      "core",
+      "alerte"
+    ],
+    "codename": "add_alerte"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change alerte",
+    "content_type": [
+      "core",
+      "alerte"
+    ],
+    "codename": "change_alerte"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete alerte",
+    "content_type": [
+      "core",
+      "alerte"
+    ],
+    "codename": "delete_alerte"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view alerte",
+    "content_type": [
+      "core",
+      "alerte"
+    ],
+    "codename": "view_alerte"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add contract",
+    "content_type": [
+      "core",
+      "contract"
+    ],
+    "codename": "add_contract"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change contract",
+    "content_type": [
+      "core",
+      "contract"
+    ],
+    "codename": "change_contract"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete contract",
+    "content_type": [
+      "core",
+      "contract"
+    ],
+    "codename": "delete_contract"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view contract",
+    "content_type": [
+      "core",
+      "contract"
+    ],
+    "codename": "view_contract"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add contract history",
+    "content_type": [
+      "core",
+      "contracthistory"
+    ],
+    "codename": "add_contracthistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change contract history",
+    "content_type": [
+      "core",
+      "contracthistory"
+    ],
+    "codename": "change_contracthistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete contract history",
+    "content_type": [
+      "core",
+      "contracthistory"
+    ],
+    "codename": "delete_contracthistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view contract history",
+    "content_type": [
+      "core",
+      "contracthistory"
+    ],
+    "codename": "view_contracthistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add document",
+    "content_type": [
+      "core",
+      "document"
+    ],
+    "codename": "add_document"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change document",
+    "content_type": [
+      "core",
+      "document"
+    ],
+    "codename": "change_document"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete document",
+    "content_type": [
+      "core",
+      "document"
+    ],
+    "codename": "delete_document"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view document",
+    "content_type": [
+      "core",
+      "document"
+    ],
+    "codename": "view_document"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add historique",
+    "content_type": [
+      "core",
+      "historique"
+    ],
+    "codename": "add_historique"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change historique",
+    "content_type": [
+      "core",
+      "historique"
+    ],
+    "codename": "change_historique"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete historique",
+    "content_type": [
+      "core",
+      "historique"
+    ],
+    "codename": "delete_historique"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view historique",
+    "content_type": [
+      "core",
+      "historique"
+    ],
+    "codename": "view_historique"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add leave history",
+    "content_type": [
+      "core",
+      "leavehistory"
+    ],
+    "codename": "add_leavehistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change leave history",
+    "content_type": [
+      "core",
+      "leavehistory"
+    ],
+    "codename": "change_leavehistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete leave history",
+    "content_type": [
+      "core",
+      "leavehistory"
+    ],
+    "codename": "delete_leavehistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view leave history",
+    "content_type": [
+      "core",
+      "leavehistory"
+    ],
+    "codename": "view_leavehistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add presence",
+    "content_type": [
+      "core",
+      "presence"
+    ],
+    "codename": "add_presence"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change presence",
+    "content_type": [
+      "core",
+      "presence"
+    ],
+    "codename": "change_presence"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete presence",
+    "content_type": [
+      "core",
+      "presence"
+    ],
+    "codename": "delete_presence"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view presence",
+    "content_type": [
+      "core",
+      "presence"
+    ],
+    "codename": "view_presence"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add leave request",
+    "content_type": [
+      "core",
+      "leaverequest"
+    ],
+    "codename": "add_leaverequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change leave request",
+    "content_type": [
+      "core",
+      "leaverequest"
+    ],
+    "codename": "change_leaverequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete leave request",
+    "content_type": [
+      "core",
+      "leaverequest"
+    ],
+    "codename": "delete_leaverequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view leave request",
+    "content_type": [
+      "core",
+      "leaverequest"
+    ],
+    "codename": "view_leaverequest"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add leave balance",
+    "content_type": [
+      "core",
+      "leavebalance"
+    ],
+    "codename": "add_leavebalance"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change leave balance",
+    "content_type": [
+      "core",
+      "leavebalance"
+    ],
+    "codename": "change_leavebalance"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete leave balance",
+    "content_type": [
+      "core",
+      "leavebalance"
+    ],
+    "codename": "delete_leavebalance"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view leave balance",
+    "content_type": [
+      "core",
+      "leavebalance"
+    ],
+    "codename": "view_leavebalance"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add position history",
+    "content_type": [
+      "core",
+      "positionhistory"
+    ],
+    "codename": "add_positionhistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change position history",
+    "content_type": [
+      "core",
+      "positionhistory"
+    ],
+    "codename": "change_positionhistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete position history",
+    "content_type": [
+      "core",
+      "positionhistory"
+    ],
+    "codename": "delete_positionhistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view position history",
+    "content_type": [
+      "core",
+      "positionhistory"
+    ],
+    "codename": "view_positionhistory"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add audit log",
+    "content_type": [
+      "core",
+      "auditlog"
+    ],
+    "codename": "add_auditlog"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change audit log",
+    "content_type": [
+      "core",
+      "auditlog"
+    ],
+    "codename": "change_auditlog"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete audit log",
+    "content_type": [
+      "core",
+      "auditlog"
+    ],
+    "codename": "delete_auditlog"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view audit log",
+    "content_type": [
+      "core",
+      "auditlog"
+    ],
+    "codename": "view_auditlog"
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Manager",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "RH",
+    "permissions": [
+      [
+        "add_employee",
+        "core",
+        "employee"
+      ],
+      [
+        "change_employee",
+        "core",
+        "employee"
+      ],
+      [
+        "delete_employee",
+        "core",
+        "employee"
+      ],
+      [
+        "view_employee",
+        "core",
+        "employee"
+      ],
+      [
+        "add_leave",
+        "core",
+        "leave"
+      ],
+      [
+        "change_leave",
+        "core",
+        "leave"
+      ],
+      [
+        "delete_leave",
+        "core",
+        "leave"
+      ],
+      [
+        "view_leave",
+        "core",
+        "leave"
+      ],
+      [
+        "add_payroll",
+        "core",
+        "payroll"
+      ],
+      [
+        "change_payroll",
+        "core",
+        "payroll"
+      ],
+      [
+        "delete_payroll",
+        "core",
+        "payroll"
+      ],
+      [
+        "view_payroll",
+        "core",
+        "payroll"
+      ]
+    ]
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Chef de service",
+    "permissions": [
+      [
+        "change_employee",
+        "core",
+        "employee"
+      ],
+      [
+        "view_employee",
+        "core",
+        "employee"
+      ],
+      [
+        "change_leave",
+        "core",
+        "leave"
+      ],
+      [
+        "view_leave",
+        "core",
+        "leave"
+      ]
+    ]
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Employe",
+    "permissions": [
+      [
+        "view_employee",
+        "core",
+        "employee"
+      ]
+    ]
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "Direction",
+    "permissions": [
+      [
+        "view_employee",
+        "core",
+        "employee"
+      ],
+      [
+        "view_payroll",
+        "core",
+        "payroll"
+      ]
+    ]
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$OWuLvqVteU81fIz8vaX5Mp$S5+2q3NvuHRkOHZBNdBaWNkTtXz9bx4oISsg0cbTRVI=",
+    "last_login": "2025-11-03T15:33:30.854Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@example.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-03T15:31:44.141Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$S5lz2i1UPj4LvvfFx8Mtjy$fYkSDVmDNon7TZ6+ZfWW25IOUWigKjuJDnZLHHfQ3vY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "RH_admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-06T15:16:05.242Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.leaverequest",
+  "pk": 1,
+  "fields": {
+    "employee": 1,
+    "start_date": "2025-11-07",
+    "end_date": "2025-11-11",
+    "leave_type": "PAID",
+    "status": "DEPT_APPROVED",
+    "reason": "Test leave",
+    "requested_at": "2025-11-06T10:54:41.301Z",
+    "dept_approver": null,
+    "hr_approver": null,
+    "decision_note": "",
+    "attachment": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2025-11-03T15:38:58.588Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "core",
+      "category"
+    ],
+    "object_id": "1",
+    "object_repr": "CDD",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2025-11-03T15:39:12.501Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "core",
+      "employee"
+    ],
+    "object_id": "1",
+    "object_repr": "sariaka - ma sariaka",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2025-11-03T15:42:43.416Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "core",
+      "contract"
+    ],
+    "object_id": "1",
+    "object_repr": "sariaka - ma sariaka - CDD (2025-11-03 -> 2026-11-03)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2025-11-03T16:07:19.779Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "core",
+      "contract"
+    ],
+    "object_id": "3",
+    "object_repr": "sariaka - ma sariaka - CDD (2025-11-03 -> 2026-11-03)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2025-11-06T14:27:43.713Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "core",
+      "payroll"
+    ],
+    "object_id": "1",
+    "object_repr": "sariaka - ma sariaka - 3/2025",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2025-11-06T15:12:14.283Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "core",
+      "absence"
+    ],
+    "object_id": "1",
+    "object_repr": "Absence sariaka - ma sariaka @ 2025-11-06",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2025-11-06T15:12:54.417Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "core",
+      "absence"
+    ],
+    "object_id": "2",
+    "object_repr": "Absence EX123 - Dupont Jean @ 2025-11-06",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2025-11-06T15:13:55.416Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "core",
+      "presence"
+    ],
+    "object_id": "1",
+    "object_repr": "Presence sariaka - ma sariaka @ 2025-11-06",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2025-11-06T15:15:17.653Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "object_id": "2",
+    "object_repr": "RH",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2025-11-06T15:16:05.999Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "object_id": "3",
+    "object_repr": "RH_admin",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+}
+]

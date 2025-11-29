@@ -1,0 +1,132 @@
+{% extends 'core/base.html' %}
+{% block title %}Messagerie RH{% endblock %}
+{% block header %}Messagerie RH{% endblock %}
+{% block subheader %}Consultez les réponses du service RH et envoyez de nouvelles demandes directement depuis cette page.{% endblock %}
+
+{% block content %}
+<section class="page-section">
+  <div class="section-header">
+    <h3>Nouvelle demande</h3>
+    <p class="section-subtitle">Envoyez vos questions ou demandes officielles au service RH.</p>
+  </div>
+  <form id="messageForm" class="panel">
+  <div class="grid grid-cols-2">
+      <label class="form-group">
+        <span class="form-label">Destinataire</span>
+        <select id="recipient" class="form-input" required></select>
+        <small id="recipientHint" class="text-muted"></small>
+      </label>
+      <label class="form-group">
+        <span class="form-label">Objet</span>
+        <input type="text" id="subject" class="form-input" placeholder="Ex: Attestation de travail" required>
+      </label>
+    </div>
+    <label class="form-group">
+      <span class="form-label">Message</span>
+      <textarea id="body" class="form-input" rows="5" placeholder="Expliquez votre demande..." required></textarea>
+    </label>
+    <div class="flex-between">
+      <p id="formStatus" class="form-status text-muted"></p>
+      <button type="submit" class="btn btn-primary">Envoyer</button>
+    </div>
+  </form>
+</section>
+
+<section class="page-section">
+  <div class="section-header">
+    <h3>Messages reçus</h3>
+    <div class="header-actions">
+      <span class="text-muted" id="inboxMode"></span>
+      <button type="button" id="refreshBtn" class="btn btn-secondary">Actualiser</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="messages-list" id="inbox"></div>
+  </div>
+</section>
+
+<script>
+const csrftoken = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('csrftoken='))?.split('=')[1];
+
+async function loadRecipients(){
+  const res = await fetch('/api/messages/recipients/');
+  if(!res.ok){
+    throw new Error('Impossible de charger les destinataires');
+  }
+  const data = await res.json();
+  const select = document.getElementById('recipient');
+  select.innerHTML = '';
+  document.getElementById('recipientHint').textContent = data.help_text || '';
+  if(!data.recipients || data.recipients.length === 0){
+    select.innerHTML = '<option>Aucun contact RH disponible</option>';
+    select.disabled = true;
+    document.getElementById('subject').disabled = true;
+    document.getElementById('body').disabled = true;
+    document.querySelector('#messageForm button[type="submit"]').disabled = true;
+    return;
+  }
+  data.recipients.forEach(r => {
+    const option = document.createElement('option');
+    option.value = r.id;
+    option.textContent = `${r.name} — ${r.function || r.department || ''}`;
+    select.appendChild(option);
+  });
+}
+
+async function loadInbox(){
+  const res = await fetch('/api/messages/inbox/');
+  const data = await res.json();
+  const container = document.getElementById('inbox');
+  container.innerHTML = '';
+  document.getElementById('inboxMode').textContent = data.mode === 'hr' ? 'Vue RH (tous les employés)' : 'Vue employé';
+  if(!data.messages || data.messages.length === 0){
+    container.innerHTML = '<p>Aucun message pour le moment.</p>';
+    return;
+  }
+  data.messages.forEach(msg => {
+    const article = document.createElement('article');
+    article.className = msg.read ? '' : 'unread';
+    article.innerHTML = `
+      <h4>${msg.subject || '(Sans objet)'} ${msg.read ? '' : '<span class="status-badge">Nouveau</span>'}</h4>
+      <p class="messages-meta">De ${msg.sender || 'RH'} ${msg.recipient ? '→ ' + msg.recipient : ''} — ${new Date(msg.created_at).toLocaleString()}</p>
+      <p>${msg.body || ''}</p>
+    `;
+    container.appendChild(article);
+  });
+}
+
+document.getElementById('messageForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const status = document.getElementById('formStatus');
+  status.textContent = 'Envoi en cours...';
+  const payload = {
+    recipient: document.getElementById('recipient').value,
+    subject: document.getElementById('subject').value,
+    body: document.getElementById('body').value,
+  };
+  const res = await fetch('/api/messages/send/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrftoken || '',
+    },
+    body: JSON.stringify(payload),
+  });
+  if(res.ok){
+    status.textContent = 'Message envoyé au service RH.';
+    document.getElementById('subject').value = '';
+    document.getElementById('body').value = '';
+    await loadInbox();
+  } else {
+    const err = await res.json().catch(() => ({}));
+    status.textContent = err.error || 'Erreur lors de l\'envoi.';
+  }
+});
+
+document.getElementById('refreshBtn').addEventListener('click', loadInbox);
+
+Promise.all([loadRecipients(), loadInbox()]).catch(err => {
+  document.getElementById('formStatus').textContent = err.message;
+});
+</script>
+{% endblock %}

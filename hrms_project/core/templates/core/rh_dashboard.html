@@ -1,0 +1,169 @@
+{% extends 'core/base.html' %}
+{% block title %}KPI RH · Tableau de bord{% endblock %}
+{% block header %}Tableau de bord RH{% endblock %}
+{% block subheader %}Introduction quotidienne pour suivre vos effectifs, la paie et les alertes opérationnelles.{% endblock %}
+
+{% block extra_head %}
+  {{ block.super }}
+  <style>
+    .legend-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:8px;background:var(--primary-color)}
+  </style>
+{% endblock %}
+
+{% block content %}
+<section class="page-section">
+  <div class="section-header">
+    <div>
+      <p class="text-muted">Mise à jour du {{ today|date:'d/m/Y' }}</p>
+      <h3>Vue synthétique</h3>
+    </div>
+    <div class="header-actions">
+      <span class="badge badge-info">{{ month_label|default:"Mois en cours" }}</span>
+    </div>
+  </div>
+  <div class="cards">
+    {% for card in kpi_cards %}
+      <article class="card {% if forloop.counter <= 2 %}accent{% endif %}">
+        <div class="card-title">{{ card.label }}</div>
+        <div class="card-value">{{ card.value }}</div>
+        {% if card.subtext %}<p class="card-subtext">{{ card.subtext }}</p>{% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="page-section">
+  <div class="chart-card panel">
+    <div>
+      <div class="section-header mb-lg">
+        <h3>Présence du jour</h3>
+        <p class="section-subtitle">Camembert interactif des statuts (présent, congé, absentéisme…).</p>
+      </div>
+      <canvas id="statusDonut" height="280"></canvas>
+    </div>
+    <div class="chart-legend">
+      {% for item in status_summary %}
+        <div class="legend-item">
+          <span class="legend-label"><span class="legend-dot" data-color="{{ item.color }}"></span>{{ item.label }}</span>
+          <span class="legend-value">{{ item.count }}</span>
+        </div>
+      {% empty %}
+        <p class="text-muted">Aucun statut disponible pour aujourd'hui.</p>
+      {% endfor %}
+      <a class="btn btn-secondary" href="{{ status_summary.0.url|default:'#' }}">Explorer les statuts</a>
+    </div>
+  </div>
+</section>
+
+<section class="page-section">
+  <div class="grid grid-cols-2">
+    <div class="panel">
+      <div class="section-header">
+        <h3>Contrats à échéance &lt; 30 jours</h3>
+        <span class="badge badge-warning">{{ metrics.contracts_expiring }} suivi{{ metrics.contracts_expiring|pluralize }}</span>
+      </div>
+      {% if expiring_contract_rows %}
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Employé</th>
+              <th>Fin</th>
+              <th>Type</th>
+              <th>Jours restants</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in expiring_contract_rows %}
+              <tr>
+                <td>{{ row.employee }}</td>
+                <td>{{ row.date_end|date:'d/m/Y' }}</td>
+                <td>{{ row.type|default:'—' }}</td>
+                <td>{{ row.days_left|default:'—' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <p class="empty-placeholder">Aucun contrat n'expire dans les 30 prochains jours.</p>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <div class="section-header">
+        <h3>Congés super-stock (&gt; 60 jours)</h3>
+        <span class="badge badge-danger">{{ metrics.leave_superstock_count }} dossier{{ metrics.leave_superstock_count|pluralize }}</span>
+      </div>
+      {% if superstock_employees %}
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Employé</th>
+              <th>Solde disponible</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in superstock_employees %}
+              <tr>
+                <td>{{ row.employee }}</td>
+                <td>{{ row.available_days }} j</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <p class="empty-placeholder">Tous les soldes sont sous contrôle.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" integrity="sha384-+fFf+JQ6Digw1k3DybMT0SqnX+0Gooy2cuglRez2oJ6TP2PzefDs2fzGEylh4G6E" crossorigin="anonymous"></script>
+  <script>
+    (function(){
+      const ctx = document.getElementById('statusDonut');
+      if(!ctx){ return; }
+      const labels = JSON.parse('{{ pie_labels_json|escapejs }}');
+      const values = JSON.parse('{{ pie_values_json|escapejs }}');
+      const colors = JSON.parse('{{ pie_colors_json|escapejs }}');
+      const stateOrder = JSON.parse('{{ status_state_order_json|escapejs }}');
+      const stateUrls = JSON.parse('{{ status_urls_json|escapejs }}');
+      document.querySelectorAll('.legend-dot').forEach(el => {
+        const color = el.dataset.color;
+        if(color){ el.style.backgroundColor = color; }
+      });
+
+      const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: colors,
+            borderWidth: 2,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { display: false }
+          },
+          onClick: (_, elements) => {
+            if(!elements.length){ return; }
+            const idx = elements[0].index;
+            const state = stateOrder[idx];
+            if(state && stateUrls[state]){
+              window.location.href = stateUrls[state];
+            }
+          }
+        }
+      });
+    })();
+  </script>
+{% endblock %}

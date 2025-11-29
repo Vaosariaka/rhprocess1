@@ -1,0 +1,7 @@
+Bonjour {{ employee.first_name }} {{ employee.last_name }},
+
+Votre période d'essai pour le contrat démarré le {{ contract.date_start }} se termine le {{ contract.date_end }}.
+Merci de contacter votre responsable ou le service RH pour décider d'un renouvellement ou d'une conversion en CDD/CDI.
+
+Cordialement,
+L'équipe RH

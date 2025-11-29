@@ -1,0 +1,269 @@
+fonctionnalités ajouté dans RH :
+    Quand le candidat arrive à entrer comme employé
+    qu'est ce qu'on peut encore gerer dedans ?
+    normalement => ça devrait etre normale et automatique apres le contrat
+    d'essai :
+        -fiche employé (nom, contact, poste, photo)
+
+        -miainga liste employé => on peut regarder fiche employé
+
+        -suivi de contrat {
+            vient de contrat d'essai, contrat d'essai = duree = 6mois, renouvelable 1fois
+            donc apres contrat d'essai => il devient CDD ou CDI
+            CDD => ne depasse pas 2ans, non renouvable et si  apres 2ans, on veut encore travailler => est obliger d'etre reconvertie en CDI
+
+        } 
+
+        -historique de contrat {
+            intervale de temps de contrat d'essai
+            de CDD
+            de CDI
+        }
+
+        -ancienneté {
+            commence par essai, commence par son obtention de contrat, par contre y'a des employés qui passe par essai mais directement CDI,
+            en raison de ses performances excellentes ou de ses exigeances
+            historique no mandeha anatiny io
+        }
+
+        -gestion de document {
+            exemple dans le pdf, certificat
+            comment les gerer
+            document, image, pdf, photo => comment les gerer
+        }
+
+        -absence et congé {
+            congé = absence demandé autorisé : 
+                en general des le commencement de contrat d'essai, un employé a 2,5 j par mois, apres un mois il a toujours 2,5 j
+                2,5 * 12(nmbre de mois) = 30j / an
+
+                droit de congé = 30j / an => congé en nature
+
+                normalement congé => puni par la loi => de le payer en argent seulement en nature
+
+                valeur de congé si on les paye en argent = 2,5 * taux journalier = 30 *taux mensuel
+                
+                Quand est ce qu'un congé est payé en argent :
+                    -si y'a une rupture de contrat ou renvoie ou demission =>> 
+                    reste de conger => doit etre payer
+            
+            mais pour absence => non autorisé :
+                miala @droit de congé
+                et si plus de droit de congé => miala @salaire
+
+            congé doit etre demander => processes de demande :
+                -en general 15j avant autorisation 
+                -peut etre accepter ou refuser
+                -debut d'année => RH => planning de congé des employés
+                -et chaque employé doit placer ces periodes de congés pour que le RH puisse faire la substitution et remplacement pour les employés qui partent en congé
+                -donc y'a validation et processus de validation de congé, à partir de departement concerné jusqu'RH 
+                -RH valide si ok ou pas 
+                -2 niveaux {
+                    departement concerné <= le chef dedans accepte le congé ou pas
+                    validation RH
+                }
+
+            -planning de RH = calendrier de l'entreprise 
+            -les choses qu'on devrait voir :
+                .alerte par rapport @ congé =
+                    *une personne qui fait une demande de congé or qu'il n'en a plus
+                    *une personne qui est partie en congé et qui n'est pas venue à temps
+                    *une personne qui n'a jamais demandé de congé mais toujours absent => indiscipliné
+                    
+                .devrait avoir un  planning
+
+                .on doit connaitre => absence repeté sans demande
+            
+            congé = 3ans cumul, 90j max de congé, apres 3ans si les congés en 1ere année ne sont pas prise => 0 (s'annule)
+
+            comment savoir qu'on a pas prise = pas de certification de demande
+
+            congé = demande et non donnée(angatahana fa tsy omena)
+
+            si y'a pas de justification de demande dans RH pendant 3ans => donc les congés du 1ere année s'annule
+            par exemple : 1ere, 2eme, 3eme année => 30j, en tout => 90j (total)
+            aucune prise de congé 1ere année, reste 60j
+            courir 3eme année => s'annule, on doit prendre dedans => congé => 1ere année
+            durée de validité => congé
+            on doit pouvoir justifier une trace de demande de congé => mais n'a pas ete accepté donc là le jour de congé ne devrait pas etre soustrait ou s'annule
+            mais si aucune trace de demande de congé => depasse 3ans => s'annule
+
+            au lieu d'avoir 90j, tu as seulement 60j seulement qui reste apres la fin de 3eme année => courir => 4eme année
+
+            congé => 0max => planning de l'entreprise qui le gere
+            congé peut pas etre négatif => par exemple tu as congé 30j, tu as pris 15j donc il te reste 15j donc tu peut pas reprendre un congé de plus de 15j car ça sera négatif
+            
+            utilité d'historique = quand est ce que tu as pris et quand est ce que tu es revenu de ton congé, est ce que tu as ete accepter quand tu as fais une demande ?
+            
+            absence repeté sans demande ou autorisation :
+                -devrait generer proces verbal ou demande d'explication
+                -quand on dit repeté = plus de 2 fois
+                -si tu fais une absence repeté plus de 2fois sans demande => notifier avec une demande d'explication
+
+        }
+
+
+        -temps et presence {
+            .gestion de systeme de pointage
+            .pointage :
+                -retard et absence, si le congé a encore du reste, alors ça sera soustrait avec le congé car c'est pareil qu'une absence non autorisé
+                mais si y'a plus de reste, ça sera soustrait avec le salaire
+            
+            .salaire : a un taux horaire car tu dois evaluer par rapport a l'argent, 2.5 * taux journalier puis convertis en taux horaire combien ?
+            si miala @congé mivadika jour ndray
+
+            .principe calcul heure supp :
+                *en general par semaine, paiement heure supp
+                *devrait pas depasser 20h par semaine HeureSup car 40h/semaine droit des emp @heure normale (8h*5j) donc 8h/j de travail
+                donc HeureSup autorisé => la moitié donc 20h / semaine
+
+                *donc comment on calcul ? car c'est heures supplementaires et non heures normales donc pas taux horaire normale qu'on le paye mais taux avec heures supplements
+                donc si on a taux horaires = 1442,34 <= comment on a obtenu ça
+                comment on calcul taux horaires ?
+                "TAUX HORAIRES NORMALES = (SALAIRE MENSUEL / 30) / 24"
+                =>on prend salaire mensuel, on convertit en taux journalier(/30), et la reponse de ça /24 heures => base horaire => 1442.34 (taux horaires normales)
+
+                "TAUX HORAIRES SUPPLEMENTAIRES = (TAUX HORAIRES NORMALES * 1.3 * 8) (pour les 8premieres heures) + (TAUX HORAIRES NORMALES * 1.5 * 12) (pour les 12h restantes)"
+                mais heures supp => 8premiers heures et 12restant => 20h
+                -8premiers heures majoré 30%
+                -12restants majoré 50%
+                1442.34 * 1.3 * 8 = taux horaire heures supp pour les 8premieres heures
+                1442.34 * 1.5 * 12 = taux horaire heures supp pour les 12 restants
+                si par exemple : il a encore 20h alors pour les 8h c'est 1442.34 * 1.3 * 8 et pour les 12h c'est 1442.34 * 1.5 * 12
+
+                par exemple HeureSup = 12h et non 20h
+                8premieres heures majorés 30% = 8h
+                et 4restants majorés 50% = 4h
+                donc TAUX HORAIRES SUPP = (TAUX HORAIRES NORM * 1.3 * 8) + (TAUX HORAIRES NORM * 1.5 * 4)
+
+                mandeha semaine1, semaine2, semaine3, semaine4(par mois) => apres le Total de ça => on place dans le fiche de paie => voici l'heure supp de cet employé
+
+                RESAKA ABSENCE ET POINTAGE => concerne la paie apres car si on finit le congé => on prends avec la paie donc gestion de temps et presence => s'integre avec paie
+        }
+
+        -gestion de paie {
+            dans excel => liste personnels qu'on donne le salaire => peut atteindre 1000lignes depend de nombres de personnels qu'on donne le salaire
+            devrait avoir : 
+                .date de l'etat de paie
+                .CNAPS possede un id pour chaque employé, si il travail une fois => c'est son id meme s'il change de société pour travaller
+                .Nom et Prenom
+                .date d'embauche => pour connaitre son ancienneté
+                .absence => si on prends avec salaire
+                .Categorie
+                .Fonctionn
+                .salaire de base => salaire sans rien encore (sans indemnité ou prime ou n'importe quel avantage(tel, maison, ...)) 
+                SALAIRE BRUTE = SALAIRE DE BASE + INDEMNITE,PRIME,AVANTAGE,HEURESUP
+
+                .CNAPS = depend de secteur :
+                    *secteur agricole = a propos de l'agriculture =
+                        -durée de travail des employés 200h / mois 
+                        -CNAPS = mpiasa anakiray mila andoavany mpampiasa @volany => charge pour la société => 8% de son salaire en brute
+                        par exemple si un employé a un salaire de 100000, donc l'employeur doit payer le salaire de l'employé 100000 + paye 8000 au CNAPS
+                        donc à la fin du mois, le patron paye les 100000 pour l'employé et 8000 pour CNAPS
+                        8% société et 1% employé => 9000 pour le CNAPS pour le salaire de l'employé 100000, 8000 payé par le patron et 1000 par l'employé pour le CNAPS
+                        donc l'employé recupere 99000 à la fin
+
+                    *secteur non agricole = qui ne concerne pas l'agriculture
+                        -durée de travail des employés 173.33h / mois ; 40h/semaine * 52semaines / 12 = 173.33h / mois
+                        -CNAPS = 13% patron et 1% employé
+                    
+                    CNAPS = misy plafonnement(prevoyance sociale) car payer 13% pour une salaire de 4m Ar est trop 
+                    plafonnement = salaire minimum * element taux secteur agricole = 350000 * 8 = 2800000
+                    donc 8% de 2800000 seulement que le CNAPS peut prendre et que le patron paye
+                    et 1% de 2800000 que l'employé paye 
+                    mais si le salaire est < inf à 2800000, on utilise pas le plafonnement
+
+                    par exemple : l'employé a une salaire de 1000000Ar qui est inferieur < au plafond qui est 2800000
+                    donc pour le secteur non agricole = le patron doit payer 13% de ce salaire donc 1000000*13/100 = 130000
+                    et l'employé doit payé 1% de ce salaire dont 1000000*1/100=10000 donc 140000 en tout que le CNAPS prends pour ce salaire de 1m Ar
+                    mais si c'est agricole = pour le patron = 1mAr*8/100=80000 et pour l'employé = 1mAr*1/100=10000
+                    donc 90000 en tout pour le CNAPS si c'est secteur agricole
+
+                    13% et 8% c'est pas soustrait avec le salaire de l'employé mais une charge de la société seulement 1% qui est soustrait de l'employé, n'entre pas dans le calcul du salaire prise par l'employé
+
+                    OSTI = organisme sanitaire, pas de plafonnement, 5%(société) et 1%(employé) en general, n'entre pas non plus dans le calcul de l'argent ou du salaire prise par l'employé
+
+                    CNAPS 8 ou 13% et OSTI 5% juste placer là mais n'entre pas dans le calcul de l'argent ou salaire touché par l'employé
+
+                    Revenu imposable = salaire brute - argent enlevé par l'employé avec CNAPS et OSTI c'est-à-dire (brute - 1% CNAPS) + (brute - 1% OSTI)
+                    a partir de revenu imposable = calcul d'impots 
+                    y'a des sortes de retenus 
+                        etat payés (10mois)
+                    
+                    10 mois = salaire brute - tous les retenus(CNAPS 1%, OSTI 1%, avance, sazy(punition))
+
+                    normalement = chaque ligne, je clique => se redirige vers le fiche de paie de la personne
+                    a chaque clic, on doit avoir fiche de paie individuelle d'un employé
+
+                    calcul de IRSA = INF < 350.000 ne paye pas, on regarde le brute et non la base imposable   
+                    
+
+                    fiche de paie normalisé => VOIR EXCEL
+
+                    HEURES SUPPLEMENTAIRES = travail a la weekend (dimanche car samedi n'est pas considéré comme travailler à la weekend car normalement on travail toujours samedi)
+
+                    travail weekend dimanche = majoré 100%
+
+                    travail de nuit = commence 22h du soir jusqu'a 5h du matin, majoration de nuit de 30% => secteur normale 
+
+                    mais y'a aussi des employés qui veulent juste travailler la nuit = veut juste prendre le taux => c'est au RH de voir cela
+
+                    Jour Ferié = 1er Janvier et 26Juin seulement
+
+                    si on fait travaille un employé en jour ferié => 200% majoration(100% * 2), *2 salaire
+                    
+                    droit de congé = si il a encore de solde et que voici son dernier fiche de paie, donc on place dedans son droit de congé
+                    mais si on a un preavis = et qu'on licensie un employé => on doit lui donner un mois minimum d'indemnité pour rechercher du travail
+                    par contre le contraire si c'est l'employé qui veut demmissionner, l'employé donne son mois de salaire a la société dont il demmissionne
+        }
+
+Fonctionnalités avancés :
+    -statistique par genre, age, service
+    -
+
+15 jours avant depart -> demande de conge 
+Historique de demande => avant de c 
+Conge any am fiche de paye si le conge est 
+Toujours mettre des historiques pour chaque absences  
+Conge de maternite 
+    Autre retenu : payer par le cnaps 
+    Nette a paye : 50% de cela 
+-----------------------------------------------------------------------------------------------
+Pret a vie :
+En cas du rupture du contrat 
+Qui " l initiateur du rupture -> ait l obligation de payer
+Par categorie 
+
+Planning de substitution de conge * gestion automatique de plannign selon le conge 
+Le systeme propose + validation en cas d acceptation 
+
+--------------- a taper manuellement -------------------
+Prime de risque : forfaitaire 
+Prime de rendement "
+Prime d anciennete " 
+-------------------------------------------------------- 
+
+Seulement apres une annee de travail effectif, c est la que l on peut prendre conge
+mais a noter que le jours de conger est toujours a une duree de 30 meme durant la periode d essaie 
+Mais il peut toujours avoir de conge exceptionnel 
+
+
+Taux de remplacenebt d un personnel dans une periode definie - turn over 
+
+Systeme de messagerie rh par exemple pour gerer oui ou non une demande de preuve 
+
+Taux horaire et taux journalier 
+
+Calc - nb de conge non pris x salaire de base mensuel/30 JOURS
+
+Important!
+Etat de paie 
+Fiche de paie 
+Planning de conge
+
+Fonction standart :
+Recherche par mot cle et filtre par categorie 
+
+Mettre des statistiques par rapport aux donnees 
+
+heure supp autorise

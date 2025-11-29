@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>Approbation demande de congé</h1>
+  <p><strong>Employé:</strong> {{ leave.employee }}</p>
+  <p><strong>Période:</strong> {{ leave.start_date }} → {{ leave.end_date }} ({{ leave.days }} jours)</p>
+  <p><strong>Type:</strong> {{ leave.leave_type }}</p>
+  <p><strong>Statut actuel:</strong> {{ leave.get_status_display }}</p>
+
+  <form method="post" action="{% url 'approve_leave' leave.pk %}">
+    {% csrf_token %}
+    <div>
+      <label for="note">Note (optionnel)</label><br />
+      <textarea name="note" id="note" rows="3" cols="60"></textarea>
+    </div>
+    <div style="margin-top:12px">
+      <button type="submit" name="action" value="approve">Approuver</button>
+      <button type="submit" name="action" value="reject">Refuser</button>
+      <a href="{% url 'leave_list' %}">Retour</a>
+    </div>
+  </form>
+{% endblock %}

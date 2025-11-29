@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Suggestions de formation{% endblock %}
+
+{% block content %}
+  <h2>Générer des suggestions de formation</h2>
+  <p>Générez automatiquement des suggestions de formation basées sur les compétences et performances.</p>
+  <div>
+    <label>Dry run (ne pas enregistrer) <input type="checkbox" id="dry_run" checked/></label>
+    <button id="generate" class="btn btn-primary">Générer</button>
+  </div>
+  <h3>Résultats</h3>
+  <div id="training-results">Aucune action réalisée.</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function getCookie(name){
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if(parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
+document.getElementById('generate').addEventListener('click', async function(){
+  const dry = document.getElementById('dry_run').checked;
+  const resultsEl = document.getElementById('training-results');
+  resultsEl.textContent = 'Génération en cours…';
+  try{
+    const res = await fetch('/api/competency/suggest-trainings/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({dry_run: dry})
+    });
+    if(res.status === 403){
+      throw new Error("Accès refusé (réservé au personnel RH/Manager).");
+    }
+    if(!res.ok) throw new Error(res.statusText || res.status);
+    const data = await res.json();
+    const created = data.created_suggestions || data.created || [];
+    const details = data.details || data.suggestions || [];
+    if(created.length){
+      resultsEl.innerHTML = '<strong>Suggestions créées:</strong><ul>' + created.map(t=>`<li>Employé ${t.employee_id || t.employee} – compétence ${t.competency_id || t.competency || ''} (${t.action||''})</li>`).join('') + '</ul>';
+    } else if(details.length){
+      resultsEl.innerHTML = '<strong>Suggestions (dry-run):</strong><ul>' + details.map(t=>`<li>Employé ${t.employee_id || t.employee || '-'} – compétence ${t.competency_id || t.competency_name || '-'}</li>`).join('') + '</ul>';
+    } else {
+      resultsEl.textContent = 'Aucune suggestion générée.';
+    }
+  }catch(err){
+    resultsEl.textContent = 'Erreur: ' + err.message;
+  }
+});
+</script>
+{% endblock %}

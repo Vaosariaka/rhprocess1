@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Importer ETAT DE PAIE</h2>
+  <p>Uploadez un fichier Excel (ETAT DE PAIE MAJ.xlsx). Par défaut l'opération est un dry-run qui montre le rapport sans modifier la base. Cliquez sur <strong>Appliquer</strong> pour effectuer l'import réel.</p>
+
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>
+      <label for="file">Fichier Excel</label>
+      <input type="file" name="file" id="file" accept=".xlsx,.xls" required />
+    </div>
+    <div style="margin-top:8px;">
+      <button type="submit" name="action" value="dry-run">Dry-run (vérifier)</button>
+      <button type="submit" name="action" value="apply">Appliquer (importer)</button>
+    </div>
+  </form>
+
+  {% if saved_name %}
+    <p>Fichier uploadé: {{ saved_name }}</p>
+  {% endif %}
+
+  {% if report %}
+    <h3>Rapport</h3>
+    <pre style="background:#f8f9fa;padding:12px;border:1px solid #ddd;white-space:pre-wrap;">{{ report }}</pre>
+  {% endif %}
+
+  <p><a href="{% url 'employee_list' %}">Retour à la liste des employés</a></p>
+{% endblock %}

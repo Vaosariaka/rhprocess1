@@ -1,0 +1,14 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block object-tools %}
+  {{ block.super }}
+{% endblock %}
+
+{% block content %}
+  <div class="employee-page-header">
+    <h1>Gestion des employés</h1>
+    <p class="muted">Liste, recherche et actions rapides sur les employés.</p>
+  </div>
+  {{ block.super }}
+{% endblock %}

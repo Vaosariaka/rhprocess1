@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <style>
+    .self-card {
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    }
+  </style>
+  <h2>Espace employé</h2>
+
+  {% if not_linked %}
+    <div class="alert alert-warning">
+      Nous n'avons pas pu trouver une fiche employé associée à votre compte utilisateur.
+      Veuillez contacter l'administrateur RH pour lier votre compte (par email ou matricule).
+    </div>
+    <p>Utilisateur courant: {{ user.username }} ({{ user.email }})</p>
+  {% else %}
+    {% if updated %}
+      <div class="alert alert-success">
+        Votre profil a été mis à jour avec succès.
+      </div>
+    {% endif %}
+  <div class="self-card">
+      <h3>Résumé</h3>
+      <p><strong>Nom:</strong> {{ employee.last_name }} {{ employee.first_name }}</p>
+      <p><strong>Matricule:</strong> {{ employee.matricule }}</p>
+      <p><strong>Département:</strong> {{ employee.department|default:'-' }}</p>
+      <p><strong>Poste:</strong> {{ employee.function|default:'-' }}</p>
+  <a class="btn btn-secondary" href="{% url 'planner_messages' %}">Messagerie RH</a>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+  {% endif %}
+
+{% endblock %}

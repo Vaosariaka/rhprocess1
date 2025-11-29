@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Contrat de travail - {{ employee }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; }
+    .header { text-align: center; margin-bottom: 20px }
+    .section { margin-bottom: 12px }
+    .label { font-weight: bold }
+    table { width: 100%; border-collapse: collapse }
+    td, th { padding: 6px; border: 1px solid #ddd }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Contrat de travail</h1>
+    <div>{{ employee.last_name }} {{ employee.first_name }} — {{ employee.matricule }}</div>
+  </div>
+
+  <div class="section">
+    <div class="label">Type de contrat:</div>
+    <div>{{ contract.get_type_display }} ({{ contract.type }})</div>
+  </div>
+
+  <div class="section">
+    <table>
+      <tr><th>Champ</th><th>Valeur</th></tr>
+      <tr><td>Secteur</td><td>{{ contract.get_sector_display }} ({{ contract.sector }})</td></tr>
+      <tr><td>Date de début</td><td>{{ contract.date_start }}</td></tr>
+      <tr><td>Date de fin</td><td>{% if contract.date_end %}{{ contract.date_end }}{% else %}-{% endif %}</td></tr>
+      <tr><td>Salaire</td><td>{{ contract.salary }}</td></tr>
+      <tr><td>Temps plein</td><td>{{ contract.full_time }}</td></tr>
+      <tr><td>Actif</td><td>{{ contract.active }}</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="label">Notes</div>
+    <div>{{ contract.notes|linebreaks }}</div>
+  </div>
+
+  <div class="section">
+    <small>Généré le {{ now|default:None }}</small>
+  </div>
+</body>
+</html>

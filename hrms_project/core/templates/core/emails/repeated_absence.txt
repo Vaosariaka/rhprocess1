@@ -1,0 +1,7 @@
+Bonjour {{ employee.first_name }} {{ employee.last_name }},
+
+Nous avons détecté {{ count }} absences non justifiées depuis le {{ since }}.
+Merci de fournir une explication ou contacter le service RH pour clarifier la situation.
+
+Cordialement,
+L'équipe RH

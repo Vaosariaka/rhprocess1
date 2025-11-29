@@ -1,0 +1,311 @@
+{% extends "admin/change_form.html" %}
+
+{% load i18n static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .employee-hero {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            box-shadow: 0 10px 25px rgba(15,23,42,0.08);
+        }
+        .employee-identity {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+        .employee-avatar {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #e2e8f0;
+            background: linear-gradient(135deg,#0f172a,#1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 48px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .employee-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .employee-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+        .employee-matricule {
+            font-size: 16px;
+            color: #475569;
+            margin: 4px 0 12px;
+            letter-spacing: 0.08em;
+        }
+        .contract-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 16px;
+            border-radius: 999px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            background: #334155;
+        }
+        .contract-badge.badge-essai { background: #f97316; }
+        .contract-badge.badge-cdd { background: #dc2626; }
+        .contract-badge.badge-cdi { background: #065f46; }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        .mt-24 { margin-top: 24px; }
+        .text-md { font-size: 18px; }
+        .metric-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .metric-label {
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #64748b;
+            letter-spacing: 0.08em;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .metric-subtext {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .contract-banner {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            background: linear-gradient(135deg,#0ea5e9,#2563eb);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .quick-actions,
+        .deadlines-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 5px 15px rgba(15,23,42,0.05);
+        }
+        .quick-actions h3,
+        .deadlines-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #0f172a;
+        }
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        .quick-actions form button {
+            width: 100%;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 0;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .quick-actions form button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn-essai { background: linear-gradient(135deg,#f97316,#f97316); }
+        .btn-cdi { background: linear-gradient(135deg,#0f766e,#0d9488); }
+        .btn-terminate { background: linear-gradient(135deg,#dc2626,#b91c1c); }
+        .quick-actions form button:not(:disabled):hover {
+            transform: translateY(-2px);
+        }
+        .deadlines-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .deadline-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .deadline-label {
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .deadline-date {
+            font-size: 14px;
+            color: #475569;
+        }
+        .deadline-pill {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .deadline-pill.safe { background: #dcfce7; color: #166534; }
+        .deadline-pill.warning { background: #fef3c7; color: #92400e; }
+        .deadline-pill.danger { background: #fee2e2; color: #b91c1c; }
+        .deadline-pill.info { background: #dbeafe; color: #1d4ed8; }
+
+        @media (max-width: 960px) {
+            .employee-hero {
+                grid-template-columns: 1fr;
+            }
+            .employee-identity {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block object-tools %}
+    {{ block.super }}
+    {% if original %}
+        {% now "Y" as current_year %}
+        {% now "n" as current_month %}
+        <div class="object-tools">
+            <form method="post" action="../export_fiche/">
+                {% csrf_token %}
+                <input type="hidden" name="year" value="{{ current_year }}">
+                <label for="id_month">Mois:</label>
+                <input type="number" name="month" id="id_month" value="{{ current_month }}" min="1" max="12">
+                &nbsp;
+                <label for="id_hours_sup_30">Heures sup 30%:</label>
+                <input type="number" step="0.01" name="hours_sup_30" id="id_hours_sup_30" value="0">
+                &nbsp;
+                <label for="id_indemnites">Indemnités:</label>
+                <input type="number" step="0.01" name="indemnites" id="id_indemnites" value="0">
+                &nbsp;
+                <button type="submit" class="button">Exporter fiche</button>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block form_top %}
+    {% if original %}
+        <div class="employee-hero">
+            <div>
+                <div class="employee-identity">
+                    <div class="employee-avatar">
+                        {% if original.photo %}
+                            <img src="{{ original.photo.url }}" alt="{{ original.get_full_name }}" />
+                        {% else %}
+                            {{ original.get_initials }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p class="employee-matricule">Matricule {{ original.matricule }}</p>
+                        <h1 class="employee-name">{{ original.get_full_name }}</h1>
+                        {% if contract_badge %}
+                            <span class="contract-badge badge-{{ contract_badge.contract.type|lower }}">
+                                {{ contract_badge.label }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="metrics-grid mt-24">
+                    <div class="metric-card">
+                        <div class="metric-label">Ancienneté</div>
+                        <div class="metric-value">{{ original.get_seniority_display|default:'-' }}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Salaire de base</div>
+                        <div class="metric-value">{{ salary_summary.current|default:original.salary_base }}</div>
+                        <div class="metric-subtext">
+                            Dernière augmentation{% if salary_summary.effective_date %} le {{ salary_summary.effective_date|date:"d/m/Y" }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Département</div>
+                        <div class="metric-value">{{ original.department|default:'-' }}</div>
+                        <div class="metric-subtext">{{ original.service|default:'Aucun service' }}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Contact</div>
+                        <div class="metric-value text-md">{{ original.phone|default:'-' }}</div>
+                        <div class="metric-subtext">{{ original.email|default:'Pas d\'email' }}</div>
+                    </div>
+                </div>
+                {% if contract_banner %}
+                    <div class="contract-banner">{{ contract_banner.message }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <div class="quick-actions">
+                    <h3>Actions rapides</h3>
+                    <div class="quick-actions-grid">
+                        <form method="post" action="{% url 'admin:core_employee_contract_action' original.pk 'renew_trial' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-essai" {% if not contract_badge or contract_badge.contract.type != 'ESSAI' %}disabled{% endif %}>
+                                Renouveler essai
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'admin:core_employee_contract_action' original.pk 'convert_cdi' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-cdi" {% if contract_badge and contract_badge.contract.type == 'CDI' %}disabled{% endif %}>
+                                Convertir en CDI
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'admin:core_employee_contract_action' original.pk 'terminate_contract' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-terminate">Terminer contrat</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="deadlines-card">
+                    <h3>Prochaines échéances RH</h3>
+                    <ul class="deadlines-list">{% for event in employee_deadlines %}
+                        <li class="deadline-item">
+                            <div>
+                                <div class="deadline-label">{{ event.label }}</div>
+                                <div class="deadline-date">{{ event.date|date:"d/m/Y" }}</div>
+                            </div>
+                            <span class="deadline-pill {{ event.severity|default:'info' }}">
+                                {{ event.severity|default:'info' }}
+                            </span>
+                        </li>
+                    {% empty %}
+                        <li class="deadline-item">
+                            <div class="deadline-label">Aucune échéance imminente</div>
+                        </li>
+                    {% endfor %}</ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
