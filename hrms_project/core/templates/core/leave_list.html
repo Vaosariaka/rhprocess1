@@ -28,7 +28,7 @@
         <a href="{% url 'leave_delete' l.pk %}">Delete</a>
         {% if can_approve and l.status == 'PENDING' %}
           |
-          <form method="post" action="{% url 'approve_leave' l.pk %}" class="ajax-approve-form" data-leave-id="{{ l.pk }}">
+          <form method="post" action="{% url 'approve_leave' l.pk %}" class="ajax-approve-form" data-leave-id="{{ l.pk }}" data-approval-url="{% url 'approve_leave' l.pk %}">
             {% csrf_token %}
             <button type="submit" name="action" value="approve">Approuver</button>
             <button type="submit" name="action" value="reject">Refuser</button>
@@ -75,7 +75,9 @@ document.addEventListener('DOMContentLoaded', function(){
       if (submitter && submitter.name) {
         formData.set(submitter.name, submitter.value);
       }
-      const url = form.action;
+  const url = form.dataset.approvalUrl || form.getAttribute('action');
+      const submitButtons = form.querySelectorAll('button[type="submit"]');
+      submitButtons.forEach(function(btn){ btn.disabled = true; btn.dataset.originalText = btn.textContent; btn.textContent = '...'; });
       fetch(url, {
         method: 'POST',
         headers: {
@@ -101,6 +103,14 @@ document.addEventListener('DOMContentLoaded', function(){
       }).catch(function(err){
         console.error('Approval failed', err);
         alert('Erreur lors de l\'approbation.');
+      }).finally(function(){
+        submitButtons.forEach(function(btn){
+          btn.disabled = false;
+          if (btn.dataset.originalText) {
+            btn.textContent = btn.dataset.originalText;
+            delete btn.dataset.originalText;
+          }
+        });
       });
     });
   });

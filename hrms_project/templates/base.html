@@ -60,7 +60,24 @@
       transition: all 0.3s ease;
       background: var(--bg-lighter);
     }
+    nav form.logout-form { display: inline; }
+    .nav-button-link {
+      color: var(--primary);
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      background: var(--bg-lighter);
+      border: none;
+      font: inherit;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
     nav a:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(37,99,235,0.25);
+    }
+    .nav-button-link:hover {
       background: var(--primary);
       color: white;
       transform: translateY(-3px);
@@ -170,13 +187,20 @@
 <body>
 
   <nav>
-    <a href="/">Accueil</a>
-    <a href="/employees/">Employés</a>
-    <a href="/leaves/">Congés</a>
-    <a href="/planner/messages/">Messagerie</a>
-    <a href="/employees/self-service/profile/">Espace employé</a>
+    <a href="{% url 'home' %}">Accueil</a>
+    <a href="{% url 'employee_list' %}">Employés</a>
+    <a href="{% url 'leave_list' %}">Congés</a>
+    {% if request.user.is_authenticated %}
+      <a href="{% url 'employee_alerts' %}">Mes alertes</a>
+      <form method="post" action="{% url 'logout' %}" class="logout-form">
+        {% csrf_token %}
+        <button type="submit" class="nav-button-link">Déconnexion</button>
+      </form>
+    {% else %}
+      <a href="{% url 'login' %}">Connexion</a>
+    {% endif %}
     <a href="/admin/">Administration</a>
-    <a href="/api/">Dashboard API</a>
+    <!-- <a href="/api/">Dashboard API</a> -->
   </nav>
 
   {% block content %}{% endblock %}

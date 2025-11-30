@@ -21,6 +21,7 @@ from .views import (
     reports_page,
     report_download,
     self_service_profile,
+    employee_alerts,
     employee_contract_action,
 )
 
@@ -65,4 +66,5 @@ urlpatterns = [
     path('reports/download/<int:pk>/', report_download, name='report_download'),
     # Self-service profile
     path('employees/self-service/profile/', self_service_profile, name='self_service_profile'),
+    path('employees/alerts/', employee_alerts, name='employee_alerts'),
 ]

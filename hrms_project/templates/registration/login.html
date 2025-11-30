@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion — RH PROCESS{% endblock %}
+
+{% block content %}
+<style>
+  .auth-card { max-width: 520px; margin: 0 auto; }
+  .auth-lead { color: var(--text-light); margin-bottom: 2rem; }
+  .alert-box { border-radius: 0.5rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .alert-error { background: #fee2e2; color: #991b1b; }
+  .alert-info { background: #ecfeff; color: #0f172a; }
+  .auth-footer { margin-top: 2rem; text-align: center; color: var(--text-light); font-size: 0.95rem; }
+  .auth-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+  .auth-link { color: var(--primary); text-decoration: none; font-weight: 600; }
+</style>
+
+<section class="form-container auth-card">
+  <h1>Connexion</h1>
+  <p class="auth-lead">
+    Identifiez-vous pour accéder à votre espace RH et consulter vos alertes personnelles.
+  </p>
+
+  {% if form.errors %}
+    <div class="alert-box alert-error">
+      Vérifiez vos identifiants. Si le problème persiste, contactez le service RH.
+    </div>
+  {% endif %}
+
+  {% if next %}
+    <div class="alert-box alert-info">
+      Vous devez être connecté pour accéder à cette page.
+    </div>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <label for="id_username">Identifiant</label>
+    {{ form.username }}
+
+    <label for="id_password">Mot de passe</label>
+    {{ form.password }}
+
+    <input type="hidden" name="next" value="{{ next }}" />
+
+    <div class="auth-actions">
+      <button type="submit">Se connecter</button>
+      <a class="auth-link" href="{% url 'password_reset' %}">Mot de passe oublié ?</a>
+    </div>
+  </form>
+
+  <div class="auth-footer">
+    Besoin d'un accès ? Écrivez à <strong>support@rh-process.mg</strong>.
+  </div>
+</section>
+{% endblock %}

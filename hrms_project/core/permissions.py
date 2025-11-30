@@ -1,19 +1,33 @@
 from rest_framework import permissions
 
 
+def is_rh_user(user):
+    """Return True when the user belongs to the RH/HR group or is superuser."""
+    try:
+        if not getattr(user, 'is_authenticated', False):
+            return False
+        if getattr(user, 'is_superuser', False):
+            return True
+        return user.groups.filter(name__in=['RH', 'HR']).exists()
+    except Exception:
+        return False
+
+
 def is_hr_or_manager(user):
     """Return True when the user has HR/Manager privileges.
 
-    We treat staff users and users in groups named 'HR' or 'Manager' as having
+    We treat staff users, RH/HR members and Manager members as having
     elevated privileges. This helper is used by the permission classes below
     and by some legacy Django views.
     """
     try:
+        if is_rh_user(user):
+            return True
         if not getattr(user, 'is_authenticated', False):
             return False
         if getattr(user, 'is_staff', False):
             return True
-        return user.groups.filter(name__in=['HR', 'Manager']).exists()
+        return user.groups.filter(name__in=['Manager']).exists()
     except Exception:
         # defensive fallback
         return bool(getattr(user, 'is_staff', False))

@@ -1,4 +1,4 @@
-{% load static %}
+{% load static access_tags %}
 <!doctype html>
 <html lang="fr">
 <head>
@@ -21,13 +21,14 @@
       <nav>
         <ul class="nav-menu">
           <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Tableau de bord</a></li>
-          <li class="nav-item"><a class="nav-link {% if '/rh/dashboard' in request.path %}active{% endif %}" href="{% url 'rh_dashboard' %}">KPI RH</a></li>
+          {% if request.user|is_rh_user %}<li class="nav-item"><a class="nav-link {% if '/rh/dashboard' in request.path %}active{% endif %}" href="{% url 'rh_dashboard' %}"> RH</a></li>{% endif %}
           <li class="nav-item"><a class="nav-link {% if '/employees' in request.path %}active{% endif %}" href="{% url 'employee_list' %}">Employés</a></li>
           <li class="nav-item"><a class="nav-link {% if '/leaves' in request.path %}active{% endif %}" href="{% url 'leave_list' %}">Congés &amp; absences</a></li>
           <li class="nav-item"><a class="nav-link {% if '/planner' in request.path and '/planner/training' not in request.path %}active{% endif %}" href="{% url 'planner_calendar' %}">Planner RH</a></li>
           <li class="nav-item"><a class="nav-link {% if '/competency' in request.path %}active{% endif %}" href="{% url 'competency_cartography_page' %}">Compétences</a></li>
           <li class="nav-item"><a class="nav-link {% if '/reports' in request.path %}active{% endif %}" href="{% url 'reports_page' %}">Rapports</a></li>
           <li class="nav-item"><a class="nav-link {% if '/planner/training' in request.path %}active{% endif %}" href="{% url 'planner_training' %}">Formations</a></li>
+          <li class="nav-item"><a class="nav-link {% if '/employees/alerts' in request.path %}active{% endif %}" href="{% url 'employee_alerts' %}">Alertes</a></li>
         </ul>
         {% block sidebar_extra %}{% endblock %}
       </nav>
@@ -45,6 +46,15 @@
             <a class="btn btn-secondary" href="{% url 'export_employees' %}">Exporter employés</a>
             <a class="btn btn-primary" href="{% url 'import_payroll_upload' %}">Importer paie</a>
           {% endblock %}
+          {% if request.user.is_authenticated %}
+            <a class="btn btn-secondary" href="{% url 'employee_alerts' %}">Mes alertes</a>
+            <form method="post" action="{% url 'logout' %}" class="logout-form-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Déconnexion</button>
+            </form>
+          {% else %}
+            <a class="btn btn-primary" href="{% url 'login' %}">Se connecter</a>
+          {% endif %}
         </div>
       </div>
 

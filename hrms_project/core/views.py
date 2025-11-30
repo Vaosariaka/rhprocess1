@@ -32,7 +32,7 @@ from .serializers import (
 )
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsHROrReadOnly, IsHRManager
+from .permissions import IsHROrReadOnly, IsHRManager, is_rh_user
 try:
     from icalendar import Calendar, Event
     ICAL_AVAILABLE = True
@@ -543,6 +543,7 @@ def export_leaves_ical(request, pk=None):
 # Simple web views (Django templates)
 from django.views.generic import ListView, DetailView
 from django.views.generic import CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import HttpResponse, FileResponse
 import openpyxl
@@ -568,7 +569,7 @@ from django.utils import timezone
 from django.db import connection
 from django.db.models import Q
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group
 from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
@@ -599,6 +600,30 @@ def _local_today():
         return timezone.localdate()
     except Exception:
         return date.today()
+
+
+def resolve_employee_for_user(user):
+    """Best-effort mapping from an authenticated User to its Employee record."""
+    if not user or not getattr(user, 'is_authenticated', False):
+        return None
+
+    emp = None
+    email = getattr(user, 'email', None)
+    if email:
+        try:
+            emp = Employee.objects.filter(email__iexact=email).first()
+        except Exception:
+            emp = None
+
+    if emp is None:
+        username = str(getattr(user, 'username', '') or '').strip()
+        if username:
+            try:
+                emp = Employee.objects.filter(matricule__iexact=username).first()
+            except Exception:
+                emp = None
+
+    return emp
 
 
 def _format_currency(value):
@@ -756,18 +781,22 @@ class EmployeeDetailView(DetailView):
         return ctx
 
 
-class LeaveListView(ListView):
+class LeaveListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Leave
     template_name = 'core/leave_list.html'
     context_object_name = 'leaves'
     paginate_by = 50
+
+    def test_func(self):
+        return is_rh_user(self.request.user)
+
     def get_queryset(self):
         return Leave.objects.select_related('employee').order_by('-start_date')
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         # allow template to show approve/reject buttons when user is manager
         user = getattr(self.request, 'user', None)
-        ctx['can_approve'] = user_is_manager(user)
+        ctx['can_approve'] = is_rh_user(user)
         return ctx
 
 
@@ -2261,20 +2290,7 @@ def self_service_profile(request):
     3. If none found, render a help message instructing to contact HR/admin.
     """
     user = getattr(request, 'user', None)
-    emp = None
-    if user and user.is_authenticated:
-        # try match by email first
-        try:
-            if getattr(user, 'email', None):
-                emp = Employee.objects.filter(email__iexact=user.email).first()
-        except Exception:
-            emp = None
-        # fallback to matricule == username
-        if emp is None:
-            try:
-                emp = Employee.objects.filter(matricule__iexact=str(user.username)).first()
-            except Exception:
-                emp = None
+    emp = resolve_employee_for_user(user)
 
     # If still not found, show a friendly page explaining how to link accounts
     if emp is None:
@@ -2299,6 +2315,46 @@ def self_service_profile(request):
         'form': form,
         'employee': emp,
         'updated': updated,
+    })
+
+
+@login_required
+def employee_alerts(request):
+    """Display HR alerts linked to the authenticated employee account."""
+    employee = resolve_employee_for_user(request.user)
+    if employee is None:
+        return render(request, 'core/employee_alerts.html', {
+            'not_linked': True,
+            'user': request.user,
+            'counts': {'open': 0, 'closed': 0, 'all': 0},
+        })
+
+    status_filter = (request.GET.get('statut') or 'OPEN').upper()
+    closed_states = {'RESOLVED', 'CLOSED'}
+    base_qs = Alerte.objects.filter(employee=employee).order_by('-date_creation')
+
+    if status_filter == 'CLOSED':
+        alerts = base_qs.filter(statut__in=closed_states)
+    elif status_filter == 'ALL':
+        alerts = base_qs
+    else:
+        alerts = base_qs.exclude(statut__in=closed_states)
+        status_filter = 'OPEN'
+
+    # Counts for pills
+    open_count = base_qs.exclude(statut__in=closed_states).count()
+    closed_count = base_qs.filter(statut__in=closed_states).count()
+    total_count = base_qs.count()
+
+    return render(request, 'core/employee_alerts.html', {
+        'employee': employee,
+        'alerts': alerts,
+        'status_filter': status_filter,
+        'counts': {
+            'open': open_count,
+            'closed': closed_count,
+            'all': total_count,
+        },
     })
 
 
@@ -3168,6 +3224,8 @@ def stats_unused_leave_summary(request):
         return JsonResponse({'data': []})
 
 
+@login_required
+@user_passes_test(is_rh_user)
 def rh_dashboard_view(request):
     """Public HR dashboard with instant KPIs and daily status pie chart."""
     today = _local_today()
@@ -3303,6 +3361,8 @@ def rh_dashboard_view(request):
     return render(request, 'core/rh_dashboard.html', context)
 
 
+@login_required
+@user_passes_test(is_rh_user)
 def rh_dashboard_state_view(request, state):
     today = _local_today()
     statuses = _build_daily_status(today)
@@ -3562,20 +3622,8 @@ def home(request):
     }
     return render(request, 'core/home.html', context)
 
-
-def user_is_manager(user):
-    """Return True if user is in Manager group or is_staff."""
-    if not user or not user.is_authenticated:
-        return False
-    if user.is_staff:
-        return True
-    try:
-        return user.groups.filter(name='Manager').exists()
-    except Exception:
-        return False
-
-
 @login_required
+@user_passes_test(is_rh_user)
 def leave_approval_page(request, pk):
     """Show a simple approval page for a manager to approve/reject a leave."""
     try:
@@ -3583,23 +3631,18 @@ def leave_approval_page(request, pk):
     except Leave.DoesNotExist:
         return HttpResponse('Demande introuvable', status=404)
 
-    if not user_is_manager(request.user):
-        return HttpResponse('Accès refusé', status=403)
-
     return render(request, 'core/leave_approval.html', {'leave': leave})
 
 
 @login_required
 @require_POST
+@user_passes_test(is_rh_user)
 def approve_leave(request, pk):
     """Handle approve/reject POST from manager. Expects 'action' in POST: 'approve' or 'reject'."""
     try:
         leave = Leave.objects.select_related('employee').get(pk=pk)
     except Leave.DoesNotExist:
         return HttpResponse('Demande introuvable', status=404)
-
-    if not user_is_manager(request.user):
-        return HttpResponse('Accès refusé', status=403)
 
     action = request.POST.get('action')
     note = request.POST.get('note', '')

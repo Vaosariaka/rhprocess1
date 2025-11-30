@@ -128,4 +128,10 @@ STATICFILES_DIRS = [
 ADMIN_MEDIA_PREFIX = '/static/admin/'  # pas obligatoire mais propre
 
 
+# Authentication redirects
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/employees/alerts/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+
 

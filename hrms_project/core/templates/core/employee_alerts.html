@@ -1,0 +1,131 @@
+{% extends "core/base.html" %}
+
+{% block title %}Mes alertes{% endblock %}
+{% block topbar_title %}Mes alertes{% endblock %}
+{% block header %}Suivi des alertes personnelles{% endblock %}
+{% block subheader %}
+Retrouvez ici toutes les alertes et notifications RH qui concernent votre situation.
+{% endblock %}
+
+{% block extra_head %}
+  <style>
+    .alert-unlinked { max-width: 760px; margin: 0 auto; }
+    .alert-info-list { margin-top: 1.5rem; }
+    .alert-filter-bar { justify-content: space-between; align-items: center; }
+    .alert-filter-pills { display: flex; gap: 1rem; flex-wrap: wrap; }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {% if not_linked %}
+    <section class="panel hero-card alert-unlinked">
+      <h2>Compte non lié</h2>
+      <p>
+        Nous n'avons pas pu retrouver votre fiche employé à partir de votre profil (<strong>{{ user }}</strong>).<br>
+        Merci de contacter le service RH afin de relier votre compte ou de vérifier votre adresse e-mail professionnelle.
+      </p>
+      <div class="info-list alert-info-list">
+        <div class="summary-note">
+          <strong>Astuce :</strong> utilisez votre e-mail professionnel pour vous connecter (ex : prenom.nom@entreprise.mg)
+        </div>
+      </div>
+    </section>
+  {% else %}
+    <section class="page-section">
+      <div class="hero">
+        <div class="hero-title">{{ employee.first_name }} {{ employee.last_name }}</div>
+        <p class="hero-subtitle">
+          {% if status_filter == 'OPEN' %}
+            Vous consultez vos alertes en cours. Utilisez les filtres pour voir l'historique complet.
+          {% elif status_filter == 'CLOSED' %}
+            Historique des alertes clôturées et résolues.
+          {% else %}
+            Vue complète de toutes vos alertes enregistrées.
+          {% endif %}
+        </p>
+        <div class="hero-metrics">
+          <div>
+            <div class="metric-label">Ouvertes</div>
+            <div class="metric-value">{{ counts.open }}</div>
+          </div>
+          <div>
+            <div class="metric-label">Clôturées</div>
+            <div class="metric-value">{{ counts.closed }}</div>
+          </div>
+          <div>
+            <div class="metric-label">Total</div>
+            <div class="metric-value">{{ counts.all }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-bar alert-filter-bar">
+        <div class="alert-filter-pills">
+          {% with selected=status_filter %}
+            <a class="status-pill {% if selected == 'OPEN' %}info{% endif %}"
+               href="{% url 'employee_alerts' %}?statut=OPEN">
+              Alertes ouvertes ({{ counts.open }})
+            </a>
+            <a class="status-pill {% if selected == 'CLOSED' %}success{% endif %}"
+               href="{% url 'employee_alerts' %}?statut=CLOSED">
+              Clôturées ({{ counts.closed }})
+            </a>
+            <a class="status-pill {% if selected == 'ALL' %}warning{% endif %}"
+               href="{% url 'employee_alerts' %}?statut=ALL">
+              Toutes ({{ counts.all }})
+            </a>
+          {% endwith %}
+        </div>
+        {% with latest=alerts|first %}
+          <span class="text-muted">
+            Dernière mise à jour :
+            {% if latest %}
+              {{ latest.date_creation|date:"d/m/Y H:i" }}
+            {% else %}
+              —
+            {% endif %}
+          </span>
+        {% endwith %}
+      </div>
+
+      {% if alerts %}
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Message</th>
+                <th>Statut</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for alert in alerts %}
+                <tr>
+                  <td><strong>{{ alert.type }}</strong></td>
+                  <td>{{ alert.message|linebreaksbr }}</td>
+                  <td>
+                    {% with status=alert.statut|upper %}
+                      {% if status == 'OPEN' %}
+                        <span class="status-pill warning">{{ status }}</span>
+                      {% elif status == 'CLOSED' or status == 'RESOLVED' %}
+                        <span class="status-pill success">{{ status }}</span>
+                      {% else %}
+                        <span class="status-pill info">{{ status }}</span>
+                      {% endif %}
+                    {% endwith %}
+                  </td>
+                  <td>{{ alert.date_creation|date:"d/m/Y H:i" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-placeholder">
+          Aucune alerte pour ce filtre.
+        </div>
+      {% endif %}
+    </section>
+  {% endif %}
+{% endblock %}

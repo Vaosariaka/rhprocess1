@@ -18,6 +18,7 @@ import tempfile
 import shutil
 import subprocess
 from .calculators import PayrollCalculator
+from .permissions import is_rh_user
 try:
     from openpyxl import load_workbook
 except Exception:
@@ -456,6 +457,9 @@ class LeaveRequestAdmin(admin.ModelAdmin):
         self.message_user(request, f"{updated} requests set to DEPT_APPROVED")
 
     def action_hr_approve(self, request, queryset):
+        if not is_rh_user(request.user):
+            self.message_user(request, "Seuls les utilisateurs RH peuvent valider les demandes.", level='error')
+            return
         # when HR approves, check entitlement before creating Leave records
         created = 0
         skipped = 0
@@ -470,6 +474,9 @@ class LeaveRequestAdmin(admin.ModelAdmin):
         self.message_user(request, f"{created} Leave records created, {skipped} skipped due to entitlement checks")
 
     def action_refuse(self, request, queryset):
+        if not is_rh_user(request.user):
+            self.message_user(request, "Seuls les utilisateurs RH peuvent refuser ou annuler des demandes.", level='error')
+            return
         updated = queryset.update(status='REFUSED')
         self.message_user(request, f"{updated} requests set to REFUSED")
 

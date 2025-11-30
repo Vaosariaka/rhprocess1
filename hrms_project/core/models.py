@@ -426,7 +426,9 @@ class LeaveRequest(models.Model):
         hire_date = getattr(self.employee, 'hire_date', None)
         start_ref = self.start_date or date.today()
         tenure_days = (start_ref - hire_date).days if hire_date else 0
-        if tenure_days < min_tenure_days:
+        probation_warning = tenure_days < min_tenure_days
+        override_allowed = self._can_override_probation(hr_user)
+        if probation_warning and not override_allowed:
             return False, (
                 "Employé non éligible: la période d'essai est inférieure à 1 an. "
                 "Veuillez attendre l'ancienneté requise avant d'approuver ce congé."
@@ -449,7 +451,22 @@ class LeaveRequest(models.Model):
         lb = _ensure_leave_balance(self.employee, year)
         lb.used_days = float(lb.used_days) + self.days
         lb.save()
-        return True, 'Leave approved and record created.'
+
+        if probation_warning and override_allowed:
+            Alerte.objects.get_or_create(
+                employee=self.employee,
+                type='LEAVE_PROBATION_OVERRIDE',
+                message=(
+                    "Congé approuvé par RH malgré une ancienneté insuffisante. "
+                    f"Ancienneté actuelle: {tenure_days} jour(s), requis: {min_tenure_days}."
+                ),
+                defaults={'statut': 'OPEN'}
+            )
+
+        msg = 'Leave approved and record created.'
+        if probation_warning and override_allowed:
+            msg += ' (validation RH malgré période d\'essai)'
+        return True, msg
 
     def clean(self):
         """Validate minimum advance notice and other business rules on leave request."""
@@ -491,6 +508,19 @@ class LeaveRequest(models.Model):
             # allow save so admin can override, but ensure alert created in clean
             pass
         super().save(*args, **kwargs)
+
+    @staticmethod
+    def _can_override_probation(user) -> bool:
+        if not user:
+            return False
+        if getattr(user, 'is_superuser', False):
+            return True
+        if user.has_perm('core.change_leaverequest'):
+            return True
+        try:
+            return user.groups.filter(name__in=['RH', 'Manager']).exists()
+        except Exception:
+            return False
 
 
 class LeaveBalance(models.Model):
