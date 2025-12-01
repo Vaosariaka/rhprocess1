@@ -4,111 +4,227 @@
 
 {% block content %}
   {% admin_kpis as kpis %}
-  <section class="admin-hero">
-    <div>
-      <p class="eyebrow">Bienvenue dans l'espace RH</p>
-      <h1>Supervisez vos effectifs, congés et paies en un clin d'œil.</h1>
-      <p class="subtitle">Utilisez les actions rapides ou parcourez les fonctionnalités détaillées ci-dessous.</p>
-      <div class="hero-actions">
-        <a class="button primary" href="{% url 'admin:core_employee_add' %}">➕ Nouvel employé</a>
-        <a class="button ghost" href="{% url 'admin:hr_dashboard' %}">📊 Tableau de bord RH</a>
-      </div>
-    </div>
-    <div class="hero-card">
-      <p class="label">Présences du {{ kpis.today }}</p>
-      <h2>{{ kpis.presence_today }}</h2>
-      <p class="muted">Présences enregistrées aujourd'hui</p>
-      <div class="hero-split">
+
+  <div id="adminLayout" data-nav="expanded" class="grid lg:grid-cols-[280px_1fr] gap-6 items-start">
+    <aside id="navAside" class="nav-aside sticky top-4 flex flex-col space-y-3 bg-slate-900/70 border border-slate-800 rounded-2xl p-4 shadow-2xl backdrop-blur theme-nav min-h-[calc(100vh-2rem)]">
+      <div class="flex items-center justify-between mb-2">
         <div>
-          <p class="label">Retards</p>
-          <strong>{{ kpis.late_today }}</strong>
+          <p class="text-xs uppercase tracking-[0.25em] text-cloud/70">RH PROCESS</p>
+          <h3 class="text-lg font-extrabold text-white">Administration</h3>
         </div>
-        <div>
-          <p class="label">Paies du mois</p>
-          <strong>{{ kpis.payrolls_month }}</strong>
+        <span class="w-2 h-2 rounded-full bg-aurora shadow-glow"></span>
+      </div>
+      <div class="user-card">
+        <div class="flex items-center gap-3">
+          <div class="user-avatar">{{ request.user.get_short_name|default:request.user.get_username|slice:":2"|upper }}</div>
+          <div>
+            <p class="text-xs uppercase tracking-[0.15em] text-cloud/60">Connecté</p>
+            <p class="text-sm font-semibold text-white">{{ request.user.get_short_name|default:request.user.get_username }}</p>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <a class="quick-chip" href="{% url 'admin:password_change' %}">Mon compte</a>
+          <a class="quick-chip danger" href="{% url 'admin:logout' %}">Se déconnecter</a>
         </div>
       </div>
-      <a class="cta-link" href="{% url 'admin:core_presence_changelist' %}">Consulter les présences →</a>
-    </div>
-  </section>
+      <nav class="space-y-3 max-h-[75vh] overflow-auto pr-1">
+        {% for app in app_list %}
+          <details class="nav-accordion" {% if forloop.first %}open{% endif %}>
+            <summary class="nav-summary">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.24em] text-cloud/70">{{ app.app_label }}</p>
+                <p class="text-sm font-semibold text-white">{{ app.name }}</p>
+              </div>
+              <span class="caret">▾</span>
+            </summary>
+            <ul class="space-y-2">
+              {% for model in app.models %}
+                <li class="flex items-center justify-between gap-2">
+                  <div>
+                    <p class="text-sm font-semibold text-white">{{ model.name }}</p>
+                    {% if model.object_name %}<p class="text-[11px] text-cloud/60">{{ model.object_name }}</p>{% endif %}
+                  </div>
+                  <div class="flex gap-2 text-xs">
+                    {% if model.add_url %}<a class="px-2 py-1 rounded-lg bg-aurora/10 border border-aurora/30 text-aurora hover:bg-aurora/20" href="{{ model.add_url }}">Nouveau</a>{% endif %}
+                    {% if model.admin_url %}<a class="px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-cloud/90 hover:text-white" href="{{ model.admin_url }}">Ouvrir</a>{% endif %}
+                  </div>
+                </li>
+              {% empty %}
+                <li class="text-cloud/60 italic">Aucun modèle</li>
+              {% endfor %}
+            </ul>
+          </details>
+        {% empty %}
+          <p class="text-cloud/70">Aucune application disponible.</p>
+        {% endfor %}
+      </nav>
+    </aside>
 
-  <section class="admin-kpi-grid">
-    <article>
-      <p class="label">Employés</p>
-      <h3>{{ kpis.total_employees }}</h3>
-      <p class="muted">{{ kpis.active_employees }} actifs</p>
-    </article>
-    <article>
-      <p class="label">Alertes ouvertes</p>
-      <h3>{{ kpis.open_alerts }}</h3>
-      <p class="muted"><a href="{% url 'admin:core_alerte_changelist' %}">Voir les alertes</a></p>
-    </article>
-    <article>
-      <p class="label">Demandes de congé en attente</p>
-      <h3>{{ kpis.pending_leaves }}</h3>
-      <p class="muted"><a href="{% url 'admin:core_leaverequest_changelist' %}?status__exact=REQUESTED">Traiter</a></p>
-    </article>
-  </section>
+    <div class="space-y-6">
+      <div class="flex justify-end gap-2 flex-wrap">
+        <button id="navToggle" class="theme-toggle">
+          <span class="nav-toggle-label">Masquer navigation</span>
+        </button>
+        <button id="themeToggle" class="theme-toggle">
+          <span class="toggle-label">Basculer thème</span>
+        </button>
+      </div>
+      <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-midnight via-ink to-black shadow-2xl p-6 theme-hero">
+        <div class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(124,58,237,0.2),transparent_28%)]"></div>
+        <div class="relative grid gap-6 lg:grid-cols-[1.5fr_1fr] items-stretch">
+          <div class="flex flex-col gap-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-700 text-sm text-cloud/90 backdrop-blur">
+              <span class="h-2 w-2 rounded-full bg-aurora animate-pulse"></span>
+              Console RH · {{ kpis.today }}
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="text-4xl sm:text-5xl font-extrabold text-white leading-tight drop-shadow-lg">Command Center RH</span>
+              <span class="text-sm uppercase tracking-[0.3em] text-aurora/80">live</span>
+            </div>
+            <p class="text-cloud/80 max-w-3xl text-lg">
+              Pilote tout en un : onboarding express, flux d’approbation congés, paie et exports. Pensé pour agir vite et bien.
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a class="group px-4 py-2 rounded-xl bg-gradient-to-r from-aurora to-glow text-ink font-semibold shadow-glow hover:shadow-glow/80 transition" href="{% url 'admin:core_employee_add' %}">
+                Démarrer un onboarding
+                <span class="inline-block transition-transform group-hover:translate-x-1">↗</span>
+              </a>
+              <a class="px-4 py-2 rounded-xl border border-slate-700 text-cloud/90 hover:border-aurora hover:text-white transition" href="{% url 'admin:hr_dashboard' %}">Tableau analytics</a>
+              <a class="px-4 py-2 rounded-xl border border-slate-700 text-cloud/90 hover:border-honey hover:text-white transition" href="{% url 'admin:core_presence_changelist' %}">Présence temps réel</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="glass-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-cloud/70">Présents</p>
+                <p class="text-4xl font-bold text-white">{{ kpis.presence_today }}</p>
+                <p class="text-sm text-cloud/80">Retards : {{ kpis.late_today }}</p>
+              </div>
+              <div class="glass-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-cloud/70">Paie</p>
+                <p class="text-4xl font-bold text-white">{{ kpis.payrolls_month }}</p>
+                <p class="text-sm text-cloud/80">Mois en cours</p>
+              </div>
+              <div class="glass-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-cloud/70">Effectif</p>
+                <p class="text-4xl font-bold text-white">{{ kpis.total_employees }}</p>
+                <p class="text-sm text-cloud/80">{{ kpis.active_employees }} actifs</p>
+              </div>
+            </div>
+          </div>
 
-  <section class="admin-quick-actions">
-    <article>
-      <h4>Congés & absences</h4>
-      <p>Approuvez les congés et ajustez les compteurs.</p>
-      <div class="actions">
-        <a class="button ghost" href="{% url 'admin:core_leave_changelist' %}">Suivi des congés</a>
-        <a class="button ghost" href="{% url 'admin:core_absence_changelist' %}">Absences</a>
-      </div>
-    </article>
-    <article>
-      <h4>Paie & rapports</h4>
-      <p>Lancez les calculs, exportez les fiches et rapports de présence.</p>
-      <div class="actions">
-        <a class="button ghost" href="{% url 'admin:core_payroll_changelist' %}">Gestion de la paie</a>
-        <a class="button ghost" href="{% url 'admin:generate_presence_report' %}?format=xlsx">Rapport de présence</a>
-      </div>
-    </article>
-    <article>
-      <h4>Employés</h4>
-      <p>Mettez à jour les dossiers, documents et contrats.</p>
-      <div class="actions">
-        <a class="button ghost" href="{% url 'admin:core_employee_changelist' %}">Liste des employés</a>
-        <a class="button ghost" href="{% url 'admin:core_document_changelist' %}">Documents</a>
-      </div>
-    </article>
-  </section>
-
-  <section>
-    <div class="admin-section-header">
-      <h2>Applications</h2>
-      <p class="muted">Toutes les fonctionnalités disponibles via l'administration Django.</p>
-    </div>
-    <div class="admin-app-grid">
-      {% for app in app_list %}
-        <article class="admin-app-card">
-          <header>
-            <h3>{{ app.name }}</h3>
-            <span>{{ app.app_label }}</span>
-          </header>
-          <ul>
-            {% for model in app.models %}
-              <li>
-                <div>
-                  <strong>{{ model.name }}</strong>
-                  {% if model.object_name %}<span class="muted">{{ model.object_name }}</span>{% endif %}
+          <div class="space-y-4">
+            <div class="glass-panel">
+              <div class="flex items-center justify-between">
+                <p class="text-sm uppercase tracking-[0.2em] text-cloud/70">Flux critique</p>
+                <a class="text-aurora font-semibold hover:text-white transition" href="{% url 'admin:core_payroll_changelist' %}">Accès paie →</a>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-3">
+                <div class="tile">
+                  <p class="text-sm text-cloud/70">Alertes ouvertes</p>
+                  <p class="text-3xl font-bold text-white">{{ kpis.open_alerts }}</p>
+                  <a class="text-sm text-aurora hover:text-white" href="{% url 'admin:core_alerte_changelist' %}">Traiter</a>
                 </div>
-                <div class="links">
-                  {% if model.add_url %}<a href="{{ model.add_url }}">Ajouter</a>{% endif %}
-                  {% if model.admin_url %}<a href="{{ model.admin_url }}">Consulter</a>{% endif %}
+                <div class="tile">
+                  <p class="text-sm text-cloud/70">Congés en attente</p>
+                  <p class="text-3xl font-bold text-white">{{ kpis.pending_leaves }}</p>
+                  <a class="text-sm text-aurora hover:text-white" href="{% url 'admin:core_leaverequest_changelist' %}?status__exact=REQUESTED">Voir la file</a>
                 </div>
-              </li>
-            {% empty %}
-              <li class="empty">Aucun modèle disponible.</li>
-            {% endfor %}
-          </ul>
-        </article>
-      {% empty %}
-        <p>Aucune application disponible.</p>
-      {% endfor %}
+              </div>
+            </div>
+            <div class="glass-panel">
+              <p class="text-sm uppercase tracking-[0.25em] text-cloud/70 mb-2">Actions rapides</p>
+              <div class="flex flex-wrap gap-2">
+                <a class="quick-chip" href="{% url 'admin:core_leave_changelist' %}">Journal congés</a>
+                <a class="quick-chip" href="{% url 'admin:core_absence_changelist' %}">Absences</a>
+                <a class="quick-chip" href="{% url 'admin:core_presence_changelist' %}">Présences</a>
+                <a class="quick-chip" href="{% url 'admin:generate_presence_report' %}?format=xlsx">Export présence</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="grid lg:grid-cols-3 gap-4 mb-4">
+        <div class="stack-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="tag">Cycle employé</p>
+              <h3 class="card-title">Onboarding & dossiers</h3>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-honey"></span>
+          </div>
+          <p class="text-cloud/80">Créer, compléter, mettre à jour les profils et pièces jointes.</p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <a class="quick-chip" href="{% url 'admin:core_employee_changelist' %}">Liste employés</a>
+            <a class="quick-chip" href="{% url 'admin:core_document_changelist' %}">Documents</a>
+          </div>
+        </div>
+        <div class="stack-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="tag">Temps & absences</p>
+              <h3 class="card-title">Appro / validation</h3>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-aurora"></span>
+          </div>
+          <p class="text-cloud/80">Approuve les congés, contrôle retards et pointages.</p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <a class="quick-chip" href="{% url 'admin:core_leaverequest_changelist' %}?status__exact=REQUESTED">À approuver</a>
+            <a class="quick-chip" href="{% url 'admin:core_absence_changelist' %}">Absences</a>
+            <a class="quick-chip" href="{% url 'admin:core_presence_changelist' %}">Présences</a>
+          </div>
+        </div>
+        <div class="stack-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="tag">Paie</p>
+              <h3 class="card-title">Production & exports</h3>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-glow"></span>
+          </div>
+          <p class="text-cloud/80">Prépare les fiches, contrôles, exports XLSX/PDF.</p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <a class="quick-chip" href="{% url 'admin:core_payroll_changelist' %}">Gestion paie</a>
+            <a class="quick-chip" href="{% url 'admin:generate_presence_report' %}?format=xlsx">Export présence</a>
+          </div>
+        </div>
+      </section>
     </div>
-  </section>
+  </div>
+  <script>
+    (function() {
+      const btn = document.getElementById('themeToggle');
+      const label = btn?.querySelector('.toggle-label');
+      const doc = document.documentElement;
+      const applyLabel = (mode) => {
+        if (!label) return;
+        label.textContent = mode === 'light' ? 'Passer en mode sombre' : 'Passer en mode clair';
+      };
+      const current = doc.getAttribute('data-theme') || 'dark';
+      applyLabel(current);
+      btn?.addEventListener('click', () => {
+        const next = (doc.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+        doc.setAttribute('data-theme', next);
+        localStorage.setItem('adminTheme', next);
+        applyLabel(next);
+      });
+    })();
+    (function() {
+      const layout = document.getElementById('adminLayout');
+      const navBtn = document.getElementById('navToggle');
+      const navLabel = navBtn?.querySelector('.nav-toggle-label');
+      const saved = localStorage.getItem('adminNav') || 'expanded';
+      const apply = (state) => {
+        if (!layout) return;
+        layout.setAttribute('data-nav', state);
+        if (navLabel) navLabel.textContent = state === 'collapsed' ? 'Afficher navigation' : 'Masquer navigation';
+      };
+      apply(saved);
+      navBtn?.addEventListener('click', () => {
+        const current = layout?.getAttribute('data-nav') || 'expanded';
+        const next = current === 'expanded' ? 'collapsed' : 'expanded';
+        apply(next);
+        localStorage.setItem('adminNav', next);
+      });
+    })();
+  </script>
 {% endblock %}

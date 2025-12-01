@@ -4,5 +4,170 @@
 {# Inject our custom admin CSS to make the admin lighter and fresher for employee management #}
 {% block extrahead %}
   {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind = {};
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Manrope', 'Inter', 'system-ui', 'sans-serif']
+          },
+          colors: {
+            midnight: '#0a1027',
+            ink: '#0b1224',
+            glow: '#7c3aed',
+            aurora: '#22d3ee',
+            honey: '#f59e0b',
+            mint: '#10b981',
+            cloud: '#cbd5e1'
+          },
+          boxShadow: {
+            glow: '0 10px 40px rgba(124, 58, 237, 0.28)',
+            card: '0 14px 40px rgba(0,0,0,0.25)'
+          }
+        }
+      },
+      corePlugins: {
+        preflight: false
+      }
+    };
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    (function() {
+      const saved = localStorage.getItem('adminTheme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
   <link rel="stylesheet" type="text/css" href="{% static 'core/css/custom_admin.css' %}">
+{% endblock %}
+
+{% load i18n %}
+
+{# Masque le bloc usertools par défaut; l'info user + logout est déplacée dans la barre latérale du dashboard #}
+{% block usertools %}{% endblock %}
+{# Masque le branding du header; le titre est déplacé dans la barre latérale personnalisée #}
+{% block branding %}{% endblock %}
+
+{% block nav-global %}
+  {% with nav_apps=app_list|default:available_apps %}
+  <aside id="globalNav" class="global-nav theme-nav">
+    <div class="nav-header">
+      <div>
+        <p class="text-xs uppercase tracking-[0.25em] text-cloud/70">RH PROCESS</p>
+        <h3 class="text-lg font-extrabold text-white">Administration</h3>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="globalNavToggle" class="theme-toggle sm">
+          <span class="nav-toggle-label">Masquer</span>
+        </button>
+        <button id="globalThemeToggle" class="theme-toggle sm">
+          <span class="toggle-label">Thème</span>
+        </button>
+      </div>
+    </div>
+    <div class="user-card">
+      <div class="flex items-center gap-3">
+        <div class="user-avatar">{{ request.user.get_short_name|default:request.user.get_username|slice:":2"|upper }}</div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.15em] text-cloud/60">Connecté</p>
+          <p class="text-sm font-semibold text-white">{{ request.user.get_short_name|default:request.user.get_username }}</p>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-3">
+        <a class="quick-chip" href="{% url 'admin:password_change' %}">{% trans 'Account' %}</a>
+        <a class="quick-chip danger" href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+      </div>
+    </div>
+    <nav class="global-nav-list">
+      {% if nav_apps %}
+        {% for app in nav_apps %}
+          <details class="nav-accordion" {% if forloop.first %}open{% endif %}>
+            <summary class="nav-summary">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.24em] text-cloud/70">{{ app.app_label }}</p>
+                <p class="text-sm font-semibold text-white">{{ app.name }}</p>
+              </div>
+              <span class="caret">▾</span>
+            </summary>
+            <ul class="space-y-2">
+              {% for model in app.models %}
+                <li class="flex items-center justify-between gap-2">
+                  <div>
+                    <p class="text-sm font-semibold text-white">{{ model.name }}</p>
+                    {% if model.object_name %}<p class="text-[11px] text-cloud/60">{{ model.object_name }}</p>{% endif %}
+                  </div>
+                  <div class="flex gap-2 text-xs">
+                    {% if model.add_url %}<a class="px-2 py-1 rounded-lg bg-aurora/10 border border-aurora/30 text-aurora hover:bg-aurora/20" href="{{ model.add_url }}">{% trans 'Add' %}</a>{% endif %}
+                    {% if model.admin_url %}<a class="px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-cloud/90 hover:text-white" href="{{ model.admin_url }}">{% trans 'Open' %}</a>{% endif %}
+                  </div>
+                </li>
+              {% empty %}
+                <li class="text-cloud/60 italic">{% trans 'No models available.' %}</li>
+              {% endfor %}
+            </ul>
+          </details>
+        {% endfor %}
+      {% else %}
+        <p class="text-cloud/70">{% trans 'No applications.' %}</p>
+      {% endif %}
+    </nav>
+  </aside>
+  <button id="navReveal" class="nav-reveal" type="button" aria-label="{% trans 'Show navigation' %}">☰</button>
+  {% endwith %}
+  <script>
+    (function() {
+      const doc = document.documentElement;
+      const savedTheme = localStorage.getItem('adminTheme') || 'dark';
+      doc.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+  <script>
+    (function() {
+      const doc = document.documentElement;
+      const nav = document.getElementById('globalNav');
+      const navToggle = document.getElementById('globalNavToggle');
+      const themeToggle = document.getElementById('globalThemeToggle');
+      const navLabel = navToggle?.querySelector('.nav-toggle-label');
+      const themeLabel = themeToggle?.querySelector('.toggle-label');
+
+      const applyNav = (state) => {
+        if (state === 'collapsed') {
+          doc.classList.add('nav-collapsed');
+        } else {
+          doc.classList.remove('nav-collapsed');
+        }
+        if (navLabel) navLabel.textContent = state === 'collapsed' ? 'Afficher' : 'Masquer';
+      };
+      const applyTheme = (mode) => {
+        doc.setAttribute('data-theme', mode);
+        if (themeLabel) themeLabel.textContent = mode === 'light' ? 'Sombre' : 'Clair';
+      };
+
+      const savedNav = localStorage.getItem('adminNavGlobal');
+      const initialNav = savedNav === 'collapsed' ? 'collapsed' : 'expanded';
+      applyNav(initialNav);
+      const savedTheme = doc.getAttribute('data-theme') || localStorage.getItem('adminTheme') || 'dark';
+      applyTheme(savedTheme);
+
+      navToggle?.addEventListener('click', () => {
+        const current = doc.classList.contains('nav-collapsed') ? 'collapsed' : 'expanded';
+        const next = current === 'expanded' ? 'collapsed' : 'expanded';
+        applyNav(next);
+        localStorage.setItem('adminNavGlobal', next);
+      });
+      document.getElementById('navReveal')?.addEventListener('click', () => {
+        applyNav('expanded');
+        localStorage.setItem('adminNavGlobal', 'expanded');
+      });
+      themeToggle?.addEventListener('click', () => {
+        const next = (doc.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        localStorage.setItem('adminTheme', next);
+      });
+    })();
+  </script>
 {% endblock %}
